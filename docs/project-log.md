@@ -1,88 +1,84 @@
-# Dashvis — Estado del proyecto
+# Dashvis — Project log
 
-> Libreta operativa. Responde a: "si hoy retomo Dashvis, ¿en qué punto exacto estoy?"  
-> Se actualiza constantemente. Para el contexto profundo ver `vision.md` y `architecture.md`.
+> Operational notebook. Answers: "if I resume Dashvis today, exactly where am I?"  
+> Updated constantly. For deep context see `vision.md` and `architecture.md`.
 
 ---
 
-## Estado de fases
+## Phase status
 
 ```
-Fase 0 — Entorno y fundamentos     [🔄] Brief generado — sesión en curso (sin completar)
-Fase 1 — APIs y arquitectura       [ ] Pendiente
-Fase 2 — Voz y señales             [ ] Pendiente
-Fase 3 — IoT y ESP32               [ ] Pendiente
-Fase 4 — Visión artificial         [ ] Pendiente
-Fase 5 — Redes y protocolos        [ ] Pendiente
-Fase 6 — Robótica y ROS2           [ ] Pendiente
-Fase 7 — Integración total         [ ] Pendiente
+Phase 0 — Environment & fundamentals   [🔄] Brief generated — session in progress (incomplete)
+Phase 1 — APIs & architecture          [ ] Pending
+Phase 2 — Voice & signals              [ ] Pending
+Phase 3 — IoT & ESP32                  [ ] Pending
+Phase 4 — Computer vision              [ ] Pending
+Phase 5 — Networks & protocols         [ ] Pending
+Phase 6 — Robotics & ROS2              [ ] Pending
+Phase 7 — Full integration             [ ] Pending
 ```
 
-**Fase activa:** Fase 0
+**Active phase:** Phase 0
 
 ---
 
-## Sesión activa
+## Active session
 
 ```
-Fase en curso:       Fase 0 — Entorno y fundamentos
-Objetivo de sesión:  Entender workflow y analizar docs
-Último punto tocado: brief generado, sesión iniciada con Gemini (sin completar al salir). Ya he creado el .gitignore y git init
+Phase in progress:   Phase 0 — Environment & fundamentals
+Session objective:   Understand workflow and analyze docs
+Last point touched:  Brief generated, session started with Gemini (incomplete when leaving).
+                     .gitignore and git init done.
 ```
 
 ---
 
-## Próximos pasos
+## Next steps
 
-1. Completar Fase 0 con Gemini usando el brief generado
-    -  
-2. Volver a Claude con retorno de fase (parcial o completo) para actualizar el estado
-
----
-
-## Dudas abiertas
-
-Tal vez los documentos estén demasiado definidos. No sé si hay early over-optimization o si sucumben al concepto utópico de "idea feliz".
-
-ver si deberia cambiar todo al inglés
+1. Complete Phase 0 with Gemini using the generated brief
+2. Return to Claude with phase return (partial or complete) to update state
 
 ---
 
-## Decisiones recientes
+## Open questions
 
-- 2026-06-04: conflicto entre setup en fase 0 o como parte de desarollo del sistema; supuesatemente cubierto. 
-se supeno que puedo contuinar con gemini ahora mismo, y el sabrá cuando algo va a phase_0 y cuando no por el brief.
+Maybe the documents are too defined. Not sure if there is early over-optimization or if they fall into the utopian concept of a "happy idea".
 
-- 2026-06-04: Estructura de repo definida. Ejercicios → scratch/phase_N/,
- módulos del sistema → carpetas por dominio. Ver architecture.md §4.
+---
 
-Las decisiones de diseño fundacionales están en `vision.md §4`.
+## Recent decisions
+
+- 2026-06-04: Phase 0 setup vs system development conflict — supposedly covered.
+  Should be able to continue with Gemini now; it will know what goes to phase_0 and what doesn't based on the brief.
+
+- 2026-06-04: Repo structure defined. Exercises → scratch/phase_N/,
+  system modules → domain folders. See architecture.md §4.
+
+Foundational design decisions are in `vision.md §4`.
 
 ---
 
 ## Hardware
 
 ```
-Raspberry Pi:     [ ] Por adquirir / [X] En mano
-ESP32:            [X] Por adquirir / [ ] En mano
-Micrófonos:       [X] Por adquirir / [ ] En mano
-Cámaras:          [X] Por adquirir / [ ] En mano
-Proyectores mini: [X] Por adquirir / [ ] En mano
-Robot (chasis):   [X] Por adquirir / [ ] En mano
-Alexa/Echo:       [ ] Por adquirir / [X] En mano
-Monitores extra:  [X] Por adquirir / [ ] En mano
-Brazos monitores: [X] Por adquirir / [ ] En mano
-Etc.              (por definir)
+Raspberry Pi:     [ ] To acquire / [X] On hand
+ESP32:            [X] To acquire / [ ] On hand
+Microphones:      [X] To acquire / [ ] On hand
+Cameras:          [X] To acquire / [ ] On hand
+Mini projectors:  [X] To acquire / [ ] On hand
+Robot (chassis):  [X] To acquire / [ ] On hand
+Alexa/Echo:       [ ] To acquire / [X] On hand
+Extra monitors:   [X] To acquire / [ ] On hand
+Monitor arms:     [X] To acquire / [ ] On hand
+Etc.              (to be defined)
 ```
 
 ---
 
-## Deuda técnica
+## Technical debt
 
-
-
-*Sin deuda técnica registrada.*
+*No technical debt recorded.*
 
 ---
 
-*Última actualización: sesión fundacional — Fase 0 iniciada.*
+*Last update: founding session — Phase 0 started.*

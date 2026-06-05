@@ -1,144 +1,144 @@
-# Dashvis — Visión
+# Dashvis — Vision
 
-> El ADN del proyecto. Cambia poco — solo cuando cambia la dirección, las prioridades o la identidad de Dashvis.  
-> Para el estado operativo del proyecto consultar `project-log.md`. Para la arquitectura técnica, `architecture.md`.
-
----
-
-## 1. El proyecto
-
-Construir un asistente domótico avanzado para una habitación en Benidorm (Valencia, España). El objetivo es doble: crear el sistema **y** aprender en el proceso. No es un proyecto donde un modelo programa todo — es un proyecto de ingeniería donde el propietario adquiere conocimientos reales de arquitectura de sistemas, IoT, redes, señales y programación construyendo cada componente.
-
-### En una frase
-
-> Sistema domótico con IA central que controla la habitación, tiene personalidad propia y aprende del usuario, construido con hardware real y software propio.
+> The DNA of the project. Changes rarely — only when the direction, priorities, or identity of Dashvis changes.  
+> For the project's operational state, see `project-log.md`. For the technical architecture, see `architecture.md`.
 
 ---
 
-## 2. Intención del asistente
+## 1. The project
 
-Dashvis no es Alexa ni Siri. Las diferencias son deliberadas y definen la dirección de todo el proyecto.
+Building an advanced home automation assistant for a room in Benidorm (Valencia, Spain). The goal is twofold: build the system **and** learn in the process. This is not a project where a model programs everything — it is an engineering project where the owner gains real knowledge of systems architecture, IoT, networks, signals, and programming by building each component.
 
-**Lo que Dashvis es:**
-- Un asistente con vida propia — estado interno, emociones, comportamiento proactivo entre interacciones
-- Un sistema que converge voz, visión, domótica y robótica en una arquitectura coherente, no módulos inconexos
-- Una presencia visual real en la habitación, no solo backend invisible
-- Un sistema que aprende del usuario con el tiempo y lo recuerda entre sesiones
-- Un proyecto que el propietario entiende porque lo construyó pieza a pieza
+### In one sentence
 
-**Lo que Dashvis no es:**
-- Un wrapper de voz sobre una API cloud sin control propio
-- Un sistema donde la IA toma todas las decisiones (hay heurísticas locales para lo predecible)
-- Un proyecto cerrado — es modular y ampliable por diseño
-- Un sistema que depende de internet para funcionar en lo esencial
-
-**Las intenciones originales en palabras del propietario:**
-- "Quiero un asistente domótico estilo Jarvis, pero modular y ampliable"
-- "No quiero depender de la IA para programarlo todo; quiero aprender mientras construyo"
-- "El sistema debe permitir heurísticas locales para ahorrar tokens y escalar el uso de IA solo cuando haga falta"
-- "La representación visual del asistente es importante, no es solo backend"
-- "Quiero que el robot, la domótica, la voz y la visión converjan en una arquitectura coherente"
+> A home automation system with a central AI that controls the room, has its own personality, and learns from the user — built with real hardware and custom software.
 
 ---
 
-## 3. Filosofía de aprendizaje
+## 2. Dashvis intent
 
-**Regla fundamental:** el propietario implementa antes de recibir la solución.
+Dashvis is not Alexa or Siri. The differences are deliberate and define the direction of the entire project.
 
-El proceso siempre sigue este orden:
+**What Dashvis is:**
+- An assistant with a life of its own — internal state, emotions, proactive behavior between interactions
+- A system that converges voice, vision, home automation, and robotics into a coherent architecture, not disconnected modules
+- A real visual presence in the room, not just invisible backend
+- A system that learns from the user over time and remembers between sessions
+- A project the owner understands because they built it piece by piece
 
-1. Claude explica el concepto y el porqué
-2. El propietario lo implementa
-3. Claude revisa y da feedback
-4. Si hay bloqueo: pista mínima, no solución completa
+**What Dashvis is not:**
+- A voice wrapper over a cloud API with no real control
+- A system where AI makes all the decisions (local heuristics handle the predictable)
+- A closed project — it is modular and expandable by design
+- A system that depends on internet to function in its essential capabilities
 
-**Lo que nunca se hace:**
-- Dar código terminado sin comprensión previa
-- Saltar pasos "para avanzar más rápido"
-- Usar herramientas sin entender qué hacen internamente
-
-**Por qué funciona este enfoque:**  
-Cada bloque que el propietario construye enseña un dominio diferente. Un ESP32 enseña señales y hardware. Una API REST enseña redes y protocolos. ROS2 enseña sistemas distribuidos. Al terminar el proyecto, el propietario puede mantener, depurar y extender el sistema sin dependencia de nadie.
+**The original intentions in the owner's words:**
+- "I want a Jarvis-style home assistant, but modular and expandable"
+- "I don't want to depend on AI to program everything; I want to learn while building"
+- "The system should use local heuristics to save tokens and scale AI use only when needed"
+- "The visual representation of the assistant matters — it's not just backend"
+- "I want the robot, home automation, voice, and vision to converge into a coherent architecture"
 
 ---
 
-## 4. Decisiones de arquitectura y razonamiento
+## 3. Learning philosophy
 
-Cada decisión incluye la alternativa considerada y la razón de la elección. Cambiar cualquiera requiere actualizar este archivo.
+**Core rule:** the owner implements before receiving the solution.
 
-### 4.1 Router LLM + heurísticas locales (no LLM puro)
+The process always follows this order:
 
-Los comandos simples ("enciende la luz", "sube la persiana") no necesitan un modelo de cientos de miles de millones de parámetros. El router clasifica primero con reglas locales y solo escala al LLM cuando la confianza es baja o la consulta es compleja. Reduce coste, latencia y dependencia de internet simultáneamente.
+1. Claude explains the concept and the why
+2. The owner implements it
+3. Claude reviews and gives feedback
+4. If blocked: minimum hint, not the full solution
 
-### 4.2 Modo concurrente como decisión de arquitectura temprana
+**What never happens:**
+- Giving finished code without prior understanding
+- Skipping steps "to move faster"
+- Using tools without understanding what they do internally
 
-Dashvis no dice "ejecutando..." y se queda en silencio. Responde de inmediato y ejecuta en paralelo. Esto requiere diseño async desde la fase 1 — no se puede añadir como capa posterior sin reescribir la lógica de control.
+**Why this approach works:**  
+Every block the owner builds teaches a different domain. An ESP32 teaches signals and hardware. A REST API teaches networks and protocols. ROS2 teaches distributed systems. By the end of the project, the owner can maintain, debug, and extend the system without depending on anyone.
 
-### 4.3 Vida propia como máquina de estados, no como prompt
+---
 
-El asistente tiene un estado interno (ánimo, nivel de energía, modo activo/pasivo) que cambia en función del tiempo, los eventos y las interacciones. Esto va más allá de incluir "sé amigable" en el system prompt — es un estado persistente que afecta cómo responde y qué hace proactivamente entre interacciones.
+## 4. Architecture decisions and reasoning
 
-### 4.4 Wake word local (no cloud)
+Each decision includes the alternative considered and the reason for the choice. Changing any of them requires updating this file.
 
-**Elegido:** openWakeWord o Porcupine, ejecutado en RPi.  
-**Descartado:** wake word de Alexa o cualquier servicio cloud.  
-**Razón:** privacidad (el audio no sale de la habitación hasta que el wake word activa), latencia (instantánea), funcionamiento offline total.
+### 4.1 LLM + local heuristics router (not pure LLM)
 
-### 4.5 Servo sobre interruptor físico (no smart switch)
+Simple commands ("turn on the light", "raise the blind") don't need a model with hundreds of billions of parameters. The router classifies first with local rules and only escalates to the LLM when confidence is low or the query is complex. Reduces cost, latency, and internet dependency simultaneously.
 
-**Elegido:** servo motor que presiona el botón del interruptor existente, controlado por ESP32.  
-**Descartado:** reemplazar el interruptor por uno inteligente (Shelly, Sonoff, etc.).  
-**Razón:** no requiere trabajo eléctrico, es reversible al 100%, elimina riesgo de manipular instalación. El prototipo en cartón permite probar la mecánica antes de instalar en producción.
+### 4.2 Concurrent mode as an early architecture decision
 
-### 4.6 Home Assistant como orquestador de domótica (no custom)
+Dashvis doesn't say "executing..." and go silent. It responds immediately and executes in parallel. This requires async design from Phase 1 — it cannot be added as a later layer without rewriting the control logic.
 
-**Elegido:** Home Assistant en RPi como hub de dispositivos.  
-**Descartado:** código propio para gestionar todos los dispositivos.  
-**Razón:** HA tiene soporte nativo para Zigbee/Z-Wave/MQTT, interfaz web, automatizaciones, integración con Alexa y una comunidad enorme. El asistente IA custom se conecta a HA via API/MQTT — no lo reemplaza.
+### 4.3 Own life as a state machine, not as a prompt
 
-### 4.7 Alexa como periférico, no como cerebro
+The assistant has an internal state (mood, energy level, active/passive mode) that changes based on time, events, and interactions. This goes beyond including "be friendly" in the system prompt — it is a persistent state that affects how it responds and what it does proactively between interactions.
 
-Los dispositivos Echo se usan como micrófonos de calidad y altavoces en zonas de la habitación. El LLM custom decide y responde. Esto preserva la inversión en hardware sin ceder el control a Amazon. El usuario habla a Alexa; Dashvis responde.
+### 4.4 Local wake word (not cloud)
 
-### 4.8 ROS2 para el robot (no framework custom)
+**Chosen:** openWakeWord or Porcupine, running on RPi.  
+**Rejected:** Alexa's wake word or any cloud service.  
+**Reason:** privacy (audio doesn't leave the room until the wake word activates), latency (instantaneous), full offline operation.
 
-**Elegido:** ROS2 Humble + rclpy (Python).  
-**Razón:** estándar de la industria, ecosistema de drivers y paquetes maduro, arquitectura de nodos que encaja con el diseño modular requerido. La curva de aprendizaje es real pero el conocimiento es completamente transferible a otros proyectos de robótica.
+### 4.5 Servo on physical switch (not smart switch)
 
-### 4.9 WebRTC para vídeo FPV (no RTSP ni HLS)
+**Chosen:** servo motor pressing the existing switch button, controlled by ESP32.  
+**Rejected:** replacing the switch with a smart one (Shelly, Sonoff, etc.).  
+**Reason:** no electrical work required, 100% reversible, eliminates risk of tampering with wiring. Cardboard prototype allows testing mechanics before installing in production.
 
-| Protocolo  | Latencia típica |
+### 4.6 Home Assistant as home automation orchestrator (not custom)
+
+**Chosen:** Home Assistant on RPi as the device hub.  
+**Rejected:** custom code to manage all devices.  
+**Reason:** HA has native support for Zigbee/Z-Wave/MQTT, web UI, automations, Alexa integration, and a large community. The custom AI assistant connects to HA via API/MQTT — it does not replace it.
+
+### 4.7 Alexa as peripheral, not as brain
+
+Echo devices are used as quality microphones and speakers throughout the room. The custom LLM decides and responds. This preserves the hardware investment without giving control to Amazon. The user speaks to Alexa; Dashvis responds.
+
+### 4.8 ROS2 for the robot (not custom framework)
+
+**Chosen:** ROS2 Humble + rclpy (Python).  
+**Reason:** industry standard, mature driver and package ecosystem, node architecture that fits the required modular design. The learning curve is real but knowledge is fully transferable to other robotics projects.
+
+### 4.9 WebRTC for FPV video (not RTSP or HLS)
+
+| Protocol   | Typical latency |
 |------------|-----------------|
 | WebRTC     | 50–150 ms       |
 | RTSP       | 2–5 s           |
 | HTTP MJPEG | > 1 s           |
 | HLS        | > 5 s           |
 
-WebRTC es la única opción con latencia sub-150 ms real. Funciona nativamente en cualquier navegador. El conocimiento adquirido es reutilizable para streaming de audio, datachannel y futuros casos de uso.
+WebRTC is the only option with realistic sub-150 ms latency. Works natively in any browser. Knowledge gained is reusable for audio streaming, datachannel, and future use cases.
 
-### 4.10 ChromaDB para memoria (no base de datos relacional)
+### 4.10 ChromaDB for memory (not relational database)
 
-La memoria del asistente debe ser recuperable por significado ("¿cuándo fue la última vez que estudié más de 3 horas seguidas?"), no por clave exacta. Los embeddings permiten búsqueda semántica. ChromaDB es local, Python-nativo y no requiere servidor externo.
+The assistant's memory must be retrievable by meaning ("when was the last time I studied for more than 3 hours straight?"), not by exact key. Embeddings allow semantic search. ChromaDB is local, Python-native, and requires no external server.
 
-### 4.11 MediaPipe Face Mesh para DMS (no cámara cloud)
+### 4.11 MediaPipe Face Mesh for DMS (not cloud camera)
 
-**Elegido:** MediaPipe en local, sin enviar vídeo a ningún servicio.  
-**Razón:** privacidad crítica. El vídeo de la habitación nunca sale del dispositivo. MediaPipe corre en tiempo real en CPU modesta. Los 468 landmarks faciales son suficientes para calcular PERCLOS, gaze score y head pose deviation.
+**Chosen:** MediaPipe locally, without sending video to any service.  
+**Reason:** critical privacy. Room video never leaves the device. MediaPipe runs in real time on modest CPU. The 468 facial landmarks are sufficient to calculate PERCLOS, gaze score, and head pose deviation.
 
-### 4.12 Python como lenguaje principal
+### 4.12 Python as the main language
 
-Python para todo excepto ESP32 (C++ requerido por Arduino). ROS2 soporta Python via rclpy. El ecosistema de IA/ML, audio, visión y networking es el mejor disponible en Python. La velocidad de prototipado compensa la diferencia de rendimiento frente a otros lenguajes para este caso de uso.
-
----
-
-## 5. Restricciones y principios no negociables
-
-1. **Sin tocar el cableado eléctrico.** Todos los actuadores físicos interactúan con los dispositivos de forma no destructiva y reversible.
-2. **Local-first.** El procesamiento de voz, visión y datos sensibles ocurre en hardware local. La nube es opcional y se activa explícitamente.
-3. **Modular por diseño.** Cada componente puede reemplazarse sin afectar al resto. Las interfaces entre capas son explícitas: MQTT topics, REST endpoints, ROS2 topics.
-4. **El propietario entiende lo que construye.** No se avanza sin comprensión. La velocidad de aprendizaje manda sobre la velocidad de construcción.
-5. **Privacidad.** El vídeo de las cámaras y el audio de los micrófonos nunca salen del sistema local salvo cuando es explícitamente requerido y aceptado.
+Python for everything except ESP32 (C++ required by the Arduino framework). ROS2 supports Python via rclpy. The AI/ML, audio, vision, and networking ecosystem is the best available in Python. Prototyping speed compensates for the performance difference vs other languages for this use case.
 
 ---
 
-*Generado en la sesión fundacional. Próxima revisión: si cambia la dirección del proyecto.*
+## 5. Non-negotiable constraints and principles
+
+1. **No touching electrical wiring.** All physical actuators interact with devices in a non-destructive and reversible way.
+2. **Local-first.** Processing of voice, vision, and sensitive data happens on local hardware. The cloud is optional and activated explicitly.
+3. **Modular by design.** Each component can be replaced without affecting the rest. Interfaces between layers are explicit: MQTT topics, REST endpoints, ROS2 topics.
+4. **The owner understands what they build.** No advancing without understanding. Learning speed takes priority over build speed.
+5. **Privacy.** Camera video and microphone audio never leave the local system unless explicitly required and accepted.
+
+---
+
+*Generated in the founding session. Next revision: if the project direction changes.*

@@ -1,124 +1,134 @@
 # Dashvis — Devlog
 
-> Memoria histórica útil. No describe el estado actual (eso es `project-log.md`) sino cómo se llegó hasta él.  
-> Responde a: "¿por qué descartamos esa librería?", "¿por qué separamos esa capa?", "¿qué rompió el flujo de voz?".
+> Useful historical memory. Does not describe the current state (that is `project-log.md`) but how we got here.  
+> Answers: "why did we drop that library?", "why did we split that layer?", "what broke the voice flow?".
 
-Formato de entrada:
+Entry format:
 
 ```
-## YYYY-MM-DD — [Fase N / Descripción breve]
+## YYYY-MM-DD — [Phase N / Brief description]
 
-**Contexto:** qué se estaba intentando hacer.
-**Qué pasó:** resultado real (éxito, fallo, descubrimiento inesperado).
-**Aprendizaje:** qué se entiende ahora que no se entendía antes.
-**Decisión tomada:** qué cambió como consecuencia (si algo cambió).
-**Reversible:** sí / no / parcialmente.
+**Context:** what was being attempted.
+**What happened:** actual result (success, failure, unexpected discovery).
+**Learning:** what is understood now that wasn't before.
+**Decision made:** what changed as a consequence (if anything).
+**Reversible:** yes / no / partially.
 ```
----
-
-## 2026-06-04 — [Fase 0 / git inicios]
-
-**Contexto:** seguí con gemini 
-**Qué pasó:** entendi sintaxis de .gitignore basica, e hice el git init. 
-**Aprendizaje:** sintaxis .gitignore y introductory cli linux commands
-**Decisión tomada:** .gitignore y .gitinit. falta branch de fase 0 y entender por que se hace. ver brief para ello.
-**Reversible:** sí 
 
 ---
+## 2026-06-05 — [Phase 0 / Language swap]
 
-## 2026-04-06 — [Fase 0 / Aprendiendo con gemini]
-
-**Contexto:** aprendiendo con gemini antes de empezar con la fase 0 
-**Qué pasó:** aprendizaje granulado
-**Aprendizaje:** 
-desgranado la gestión de paquetes, compiladores y binarios: cómo se escribe, cómo se empaqueta, cómo se distribuye y cómo se instalan paquetes
-
-archivos precompilados (.whl) y lo que ofrecen (.dll, .py, metadatos... u otros archivos si son librerias complejas)
-
-estos de arriba pip los instala segun el procesador y sis operativo. Hay un .whl para cada combinacion.
-
-el sistema operativo son las normas del edificio, el procesador es el trabajador que habla un idioma. El binario (.dll/.so) instrucciones escritas en x idioma.
-
-**Decisión tomada:** ninguna 
-**Reversible:** es aprendizaje. No toma este atributo.
+**Context:** spansish to english
+**What happened:** change all the documentation from spanish to english
+**Learning:** nothing.
+**Decision made:** from now on I'll be working on a fully english basis so there's no name inconsistency
+**Reversible:** yes, with AI. 
 
 ---
 
-## 2026-06-04 — Estructura de repositorio definida
+## 2026-06-04 — [Phase 0 / git beginnings]
 
-**Contexto:** Al inicializar git en la carpeta Dashvis con Gemini, surgió la pregunta de dónde poner el código de Phase 0 y cómo evolucionaría el repo con las fases.
-
-**Qué pasó:** La estructura `phases/phase_0/`, `phases/phase_1/`... organiza el código por cuándo se aprendió, no por qué hace. Los ejercicios de Phase 0 (monitor.py, servidor TCP) no son componentes de Dashvis — son artefactos de aprendizaje que no van a producción. Mezclarlos con carpetas del sistema haría el repo un diario en vez de un proyecto.
-
-**Aprendizaje:** Las fases son una estructura de aprendizaje. El repositorio debe ser una estructura de sistema. `scratch/phase_N/` para ejercicios; carpetas arquitectónicas (`cerebro/`, `percepcion/`, etc.) para código real que crece con el proyecto.
-
-**Decisión tomada:** Estructura definida en `architecture.md §4`. Las carpetas del sistema aparecen al construir ese módulo, no antes. Phase 0 solo produce `scratch/phase_0/`. Esta estructura se incluye en todos los briefs como sección fija.
-
-**Reversible:** Sí. Si un ejercicio resulta ser directamente reutilizable como componente real, se mueve a su carpeta arquitectónica.
+**Context:** continued with Gemini.  
+**What happened:** understood basic .gitignore syntax and did git init.  
+**Learning:** .gitignore syntax and introductory Linux CLI commands.  
+**Decision made:** .gitignore and git init done. Still need to create phase-0 branch and understand why it's done. See brief.  
+**Reversible:** yes
 
 ---
 
-## 2026-06-04 — Brief de Fase 0 generado
+## 2026-06-04 — [Phase 0 / Learning with Gemini]
 
-**Contexto:** Primera sesión de trabajo real del proyecto. Calibración de nivel antes de generar el brief.
+**Context:** learning with Gemini before starting Phase 0 work.  
+**What happened:** granular learning session.  
+**Learning:**  
+Broke down package management, compilers and binaries: how code is written, packaged, distributed and how packages are installed.
 
-**Qué pasó:** Calibración: terminal básico (cd, ls, cp), Python entre básico y módulos, Git básico (commits/push), redes ninguna. Brief generado con 4 mini-retos calibrados a ese nivel + reto integrador (servidor TCP desde documentación sin copiar ejemplos). Sesión de aprendizaje iniciada con Gemini usando el brief. Sin completar al cerrar esta sesión.
+Precompiled files (.whl) and what they contain (.dll, .py, metadata... or other files for complex libraries).
 
-**Aprendizaje:** La calibración previa cambia significativamente los retos. El mismo reto integrador (servidor TCP) tiene distinto punto de partida según si el usuario ya entiende qué es un puerto o no.
+pip installs these based on processor and OS. There is a .whl for each combination.
 
-**Decisión tomada:** Ninguna arquitectónica. Trabajo de Fase 0 se realiza con Gemini usando el brief generado.
+The OS is the building's rules, the processor is the worker who speaks a language. The binary (.dll/.so) are instructions written in that language.
+
+**Decision made:** none.  
+**Reversible:** this is learning, attribute does not apply.
+
+---
+
+## 2026-06-04 — Repository structure defined
+
+**Context:** When initializing git in the Dashvis folder with Gemini, the question arose of where to put Phase 0 code and how the repo would evolve with phases.
+
+**What happened:** The structure `phases/phase_0/`, `phases/phase_1/`... organizes code by when it was learned, not by what it does. Phase 0 exercises (monitor.py, TCP server) are not Dashvis components — they are learning artifacts that don't go to production. Mixing them with system folders would make the repo a diary instead of a project.
+
+**Learning:** Phases are a learning structure. The repository must be a system structure. `scratch/phase_N/` for exercises; architectural folders (`brain/`, `perception/`, etc.) for real code that grows with the project.
+
+**Decision made:** Structure defined in `architecture.md §4`. System folders appear when that module is built, not before. Phase 0 only produces `scratch/phase_0/`. This structure is included in all briefs as a fixed section.
+
+**Reversible:** Yes. If an exercise turns out to be directly reusable as a real component, it is moved to its architectural folder.
+
+---
+
+## 2026-06-04 — Phase 0 brief generated
+
+**Context:** First real working session of the project. Level calibration before generating the brief.
+
+**What happened:** Calibration: basic terminal (cd, ls, cp), Python between basic and modules, basic Git (commits/push), no networking. Brief generated with 4 mini-retos calibrated to that level + integrator reto (TCP server from documentation without copying examples). Learning session started with Gemini using the brief. Incomplete when closing this session.
+
+**Learning:** Prior calibration significantly changes the retos. The same integrator reto (TCP server) has a different starting point depending on whether the user already understands what a port is or not.
+
+**Decision made:** No architectural decision. Phase 0 work is done with Gemini using the generated brief.
 
 **Reversible:** —
 
 ---
 
-## 2026-06-04 — Sistema de retos: de fijos a dinámicos
+## 2026-06-04 — Reto system: from fixed to dynamic
 
-**Contexto:** Cada fase tenía un único reto hardcodeado en `architecture.md`.
+**Context:** Each phase had a single hardcoded reto in `architecture.md`.
 
-**Qué pasó:** Análisis reveló que un solo reto cubre ~25% de los skills de una fase. La Fase 0 tiene 4 dominios (Linux, Python, Git, redes) y el reto único solo tocaba Python + redes. Para un usuario sin experiencia en Git, ese reto no valida nada de Git. Para alguien que ya sabe redes, el reto no aporta. Era simbólico, no representativo.
+**What happened:** Analysis revealed that a single reto covers ~25% of a phase's skills. Phase 0 has 4 domains (Linux, Python, Git, networking) and the single reto only touched Python + networking. For a user with no Git experience, that reto validates nothing about Git. For someone who already knows networking, the reto adds nothing. It was symbolic, not representative.
 
-**Aprendizaje:** Un reto único por fase implica que existe una prueba de toda la fase. No la hay — solo hay un artefacto integrador. Los mini-retos por dominio son los que validan el aprendizaje real, y dependen del nivel de partida.
+**Learning:** A single reto per phase implies there is a test for the whole phase. There isn't — there is only one integrating artifact. The domain mini-retos are what validate real learning, and they depend on the starting level.
 
-**Decisión tomada:** Los retos se generan en el momento del brief con calibración previa. `architecture.md` documenta solo la estructura (mini-retos + reto integrador + extensión opcional), no el contenido concreto.
+**Decision made:** Retos are generated at brief creation time with prior level calibration. `architecture.md` documents only the structure (mini-retos + integrator reto + optional extension), not the specific content.
 
-**Reversible:** Sí. Si se prefiere tener retos de referencia fijos, se pueden añadir como ejemplo orientativo en `architecture.md` sin eliminar la generación dinámica.
-
----
-
-## 2026-06-04 — Diagrama de arquitectura: tres iteraciones
-
-**Contexto:** `architecture.md` necesitaba un diagrama del sistema. El SVG interactivo existe pero es un artefacto de navegación, no de documentación en texto.
-
-**Qué pasó:**
-- **Iteración 1 (error):** cuadrícula 3×2 sin etiquetas de sección. Dos filas anónimas de tres módulos cada una. El layout implicaba que PERCEPCIÓN → DOMÓTICA y SALIDA VISUAL → ROBOT tenían dependencia vertical. Falso.
-- **Iteración 2 (overcorrección):** hub-and-spoke con 5 cajas planas y flechas ▼ iguales para todos. Eliminó las dependencias falsas pero colapsó 15 bloques en 5 resúmenes y perdió las agrupaciones de sub-módulos, que sí son reales (ESP32 + HA + Alexa son la capa domótica, no equivalentes individuales al robot).
-- **Iteración 3 (actual):** hub-and-spoke plano mantenido, pero flechas diferenciadas por tipo de relación: ↑ entrada (PERCEPCIÓN envía datos al cerebro), ↓ salida (cerebro dirige SALIDA VISUAL sin retorno), ↕ control (DOMÓTICA/ROBOT: comandos + estado de vuelta), ↕ servicio (DATOS: infraestructura transversal, no módulo peer).
-
-**Aprendizaje:** Los diagramas en texto necesitan anotaciones explícitas que los diagramas visuales reciben gratis del color y las etiquetas de sección. El SVG interactivo usa colores por sección y etiquetas — eso elimina la ambigüedad que el texto requiere resolver con símbolos. DATOS es cualitativamente diferente al resto: el cerebro lee y escribe allí, pero también otros módulos producen datos que se almacenan. No es un módulo orquestado, es infraestructura compartida.
-
-**Decisión tomada:** Diagrama hub-and-spoke con anotaciones de flujo. DATOS marcado como ↕ servicio con nota explícita en la leyenda. Párrafo introductorio de la sección actualizado: ya no dice "6 capas verticales" sino "hub-and-spoke".
-
-**Reversible:** Sí — si en fases posteriores el sistema crece y aparecen relaciones directas entre módulos (por ejemplo, PERCEPCIÓN alimentando directamente a DATOS sin pasar por el cerebro), el diagrama necesitará actualización.
+**Reversible:** Yes. If fixed reference retos are preferred, they can be added as examples in `architecture.md` without eliminating dynamic generation.
 
 ---
 
-## 2026-06-04 — Sistema de documentación: 4 archivos
+## 2026-06-04 — Architecture diagram: three iterations
 
-**Contexto:** El proyecto comenzó con un único `vision.md` que mezclaba identidad, arquitectura, estado operativo e historial.
+**Context:** `architecture.md` needed a system diagram. The interactive SVG exists but is a navigation artifact, not text documentation.
 
-**Qué pasó:** Se separó en 4 archivos con responsabilidades distintas. Se renombró el proyecto de "Jarvis" a "Dashvis". Se añadió una sección de "Intención del asistente" a `vision.md` que no existía en el original — captura el alma del proyecto en primera persona, distingue Dashvis de Alexa/Siri, y preserva las intenciones originales como citas literales.
+**What happened:**
+- **Iteration 1 (error):** 3×2 grid without section labels. Two anonymous rows of three modules each. The layout implied PERCEPTION → AUTOMATION and VISUAL OUTPUT → ROBOT had vertical dependency. False.
+- **Iteration 2 (overcorrection):** hub-and-spoke with 5 flat boxes and identical ▼ arrows for all. Eliminated false dependencies but collapsed 15 detailed blocks into 5 summaries and lost the sub-module groupings, which are real (ESP32 + HA + Alexa are the automation layer, not individually equivalent to the whole robot).
+- **Iteration 3 (current):** flat hub-and-spoke maintained, but arrows differentiated by relationship type: ↑ input (PERCEPTION sends data to brain), ↓ output (brain directs VISUAL OUTPUT without return), ↕ control (AUTOMATION/ROBOT: commands + state back), ↕ service (DATA: transversal infrastructure, not a peer module).
 
-**Aprendizaje:** Un solo archivo que mezcla "por qué existe el proyecto", "cómo está organizado" y "en qué punto estamos" es difícil de mantener y difícil de usar como contexto en sesiones nuevas. La separación hace que cada archivo responda a una pregunta distinta y tenga una frecuencia de cambio diferente: `vision.md` casi nunca cambia, `project-log.md` cambia constantemente.
+**Learning:** Text diagrams need explicit annotations that visual diagrams get for free from color and section labels. The interactive SVG uses color per section and labels — that eliminates the ambiguity that text needs to resolve with symbols. DATA is qualitatively different from the rest: the brain reads and writes there, but other modules also produce data stored there. It is not an orchestrated module, it is shared infrastructure.
 
-**Decisión tomada:**
-- `vision.md` — identidad, filosofía, porqué de las decisiones
-- `architecture.md` — estructura del sistema, stack, fases, plantillas de brief/retorno
-- `project-log.md` — estado operativo actual
-- `devlog.md` — historial de cambios y aprendizajes útiles
+**Decision made:** Hub-and-spoke diagram with flow annotations. DATA marked as ↕ service with explicit note in the legend. Introductory paragraph updated: no longer says "6 vertical layers" but "hub-and-spoke".
 
-**Reversible:** La estructura de archivos sí. Fusionar dos archivos si resultan redundantes es trivial. El nombre Dashvis: pendiente de confirmar definitivamente.
+**Reversible:** Yes — if in later phases the system grows and direct relationships appear between modules (e.g. PERCEPTION feeding directly to DATA without going through the brain), the diagram will need updating.
 
 ---
 
-*Las entradas se añaden en orden cronológico inverso (más reciente arriba).*
+## 2026-06-04 — Documentation system: 4 files
+
+**Context:** The project started with a single `vision.md` that mixed identity, architecture, operational state, and history.
+
+**What happened:** Split into 4 files with distinct responsibilities. Project renamed from "Jarvis" to "Dashvis". A "Dashvis intent" section was added to `vision.md` that didn't exist in the original — it captures the soul of the project in first person, distinguishes Dashvis from Alexa/Siri, and preserves the original intentions as literal quotes.
+
+**Learning:** A single file mixing "why the project exists", "how it is organized" and "where we are" is hard to maintain and hard to use as context in new sessions. The separation makes each file answer a distinct question with a different change frequency: `vision.md` almost never changes, `project-log.md` changes constantly.
+
+**Decision made:**
+- `vision.md` — identity, philosophy, reasoning behind decisions
+- `architecture.md` — system structure, stack, phases, brief/return templates
+- `project-log.md` — current operational state
+- `devlog.md` — history of useful changes and learnings
+
+**Reversible:** The file structure yes. Merging two files if they become redundant is trivial. The name Dashvis: pending final confirmation.
+
+---
+
+*Entries are added in reverse chronological order (most recent first).*
