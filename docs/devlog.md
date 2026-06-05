@@ -14,6 +14,16 @@ Entry format:
 **Decision made:** what changed as a consequence (if anything).
 **Reversible:** yes / no / partially.
 ```
+---
+
+## 2026-06-05 — [Phase 0 / mini-challenge 1]
+
+**Context:** mini-challenge 1 with gemini.
+**What happened:** repository done. public and open core. local-online connection thanks to .git 
+**Learning:** .git relevance and autocrlf for file compatibility between linux (rpi) & windows  
+**Decision made:** open core
+**Reversible:** partially
+---
 
 ---
 ## 2026-06-05 — [Phase 0 / Language swap]
