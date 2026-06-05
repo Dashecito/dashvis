@@ -1,0 +1,9 @@
+# virtual python environments (heavy and architecture specific)
+venv/
+
+#telemetry datafiles (temporary plaintext database)
+*.csv
+
+# temporary python compiled files (system trash)
+__pycache__/
+*.pyc
