@@ -44,6 +44,8 @@ Last point touched:  Brief generated, session started with Gemini (incomplete wh
 
 Maybe the documents are too defined. Not sure if there is early over-optimization or if they fall into the utopian concept of a "happy idea".
 
+Keep in mind the differentiation between "core funcionality" and "potentially comercializable functionality". Keep the first open source, and the second reserved for comercial licences.  
+
 ---
 
 ## Recent decisions
