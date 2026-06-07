@@ -14,12 +14,37 @@ Entry format:
 **Decision made:** what changed as a consequence (if anything).
 **Reversible:** yes / no / partially.
 ```
+
+---
+## 2026-06-05 — [Phase 0 / Mini-Challenge 2 & Env Epiphanies]
+
+**Context:** mini-challenge 2 regarding python venv  and native hardware tracking with gemini.
+**What happened:** Created a virtual environment (`.venv`), activated it, upgraded `pip`, installed `psutil`, and ran `test_cpu.py` to fetch real-time CPU stats (~3% usage).
+**Learning:** - A virtual env is not just an empty directory made with `mkdir`; it requires `python -m venv` to clone the core language interpreter.
+- Being physically inside the project folder doesn't mean dependencies are isolated automatically. The terminal pointer itself needs to be hijacked via `source`, visually tracked by the `(.venv)` prefix.
+- Connected this to my LOLDLE project: understood that `node_modules` and `.venv` serve the exact same purpose (the "app store" for dependencies).
+- Massive realization about `dist/` and Firebase: `npm run build` squashes everything for the browser sandbox, and `firebase deploy` updates code structure, whereas live database connections stream data independently without needing a code redeploy.
+- New environments inherit a frozen (sometimes outdated) backup version of `pip` stored in Python's core directory, which needs an explicit upgrade.
+**Decision made:** Native isolated backend ecosystem is officially running. Ready to scale.
+**Reversible:** N/A (learning).
+
+---
+
+## 2026-06-05 — [Phase 0 / Web Sandbox vs Native OS]
+
+**Context:** understanding modern web architecture vs native backend through my LOLDLE project.
+**What happened:** mapped JS/React concepts (`node_modules`, `dist`, Firebase) to Python (`.venv`, native execution).
+**Learning:** Web frontends run in a browser sandbox (Client-side) and cannot access physical hardware. Serverless apps use BaaS (Firebase) for data storage, but Dashvis requires a native Python backend running directly on the OS to bypass the browser sandbox and read CPU/RAM data. Also, `.venv` is Python's `node_modules` but includes a cloned interpreter, not just libraries.
+**Decision made:** proceed to create `.venv` to build the native Dashvis backend.
+**Reversible:** N/A (learning).
+
 ---
 
 ## 2026-06-05 — [Phase 0 / mini-challenge 1]
 
 **Context:** mini-challenge 1 with gemini.
-**What happened:** repository done. public and open core. local-online connection thanks to .git 
+**What happened:** repository done. public and open core. local-online connection thanks to .git. So far everything
+will be done in "phase-0" branch. Later on, when I know more about the project, we'll start with the main branch.
 **Learning:** .git relevance and autocrlf for file compatibility between linux (rpi) & windows  
 **Decision made:** open core
 **Reversible:** partially
