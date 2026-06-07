@@ -1,4 +1,7 @@
-import psutil
+import psutil, datetime
+
+current_time = datetime.datetime.now()
 
 cpu_usage = psutil.cpu_percent(interval=1)
-print(f"El uso actual de la CPU de mi PC es del: {cpu_usage}%")
+ram_usage = psutil.virtual_memory().percent
+print(f"\n[timestamp: {current_time}] CPU & RAM usage of this system: {cpu_usage}%, {ram_usage}%\n")
