@@ -1,6 +1,6 @@
-import psutil, datetime
+import psutil, datetime as dt
 
-current_time = datetime.datetime.now()
+current_time = dt.datetime.now()
 
 cpu_usage = psutil.cpu_percent(interval=1)
 ram_usage = psutil.virtual_memory().percent

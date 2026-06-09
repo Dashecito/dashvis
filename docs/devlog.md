@@ -14,7 +14,82 @@ Entry format:
 **Decision made:** what changed as a consequence (if anything).
 **Reversible:** yes / no / partially.
 ```
+---
+## 2026-06-09 — Phase 0 / File I/O fundamentals: iteration vs readlines(), CSV parsing
 
+**Context:** Working through CS50P Topic 6 (File I/O) as prerequisite groundwork
+before tackling the Python mini-challenge from Phase 0 (psutil + CSV logger with
+error handling, stdlib only). Created test_fileio.py to experiment hands-on and
+csvfile.csv as the working dataset. Used CS50P Topic 6 documentation as reference
+reinforcement throughout. Goal: finish Topic 6 before or in parallel with the
+mini-challenge.
+
+**What happened:** Two separate sessions covering adjacent File I/O concepts.
+
+Session 1 — file object iteration vs readlines():
+Started from a CS50P code example that used readlines() then iterated over the
+result, which could be simplified to iterating the file object directly. That
+raised the question of whether readlines() was pointless. Discovered that file
+objects are iterators, not sequences — so file[0], len(file), and slicing don't
+work. Also discovered the course notes contained an inaccuracy: they claimed you
+"can't sort something you're reading line by line", but sorted(file) works fine
+because Python consumes the iterator internally. The actual limitation is more
+specific: you can't sort while processing lines as they arrive — you need all
+lines collected first.
+
+Session 2 — CSV parsing and dict vs list structure:
+Explored two approaches to reading a CSV into memory and sorting it. The
+commented-out approach (unpacking each row into named variables, building an
+explicit dict, appending that dict) worked correctly with key-based access in
+sorted(). Switching to appending the raw row directly silently changed the data
+structure from dict to list, breaking the lambda in sorted() at runtime with a
+TypeError. No syntax error, no warning — the inconsistency only surfaced at the
+sort step.
+
+**Learning:**
+- A file object is an iterator: supports forward-only one-at-a-time reading,
+  for loops, sorted(), and list(). Does not support file[0], len(file), or
+  slicing — not because Python refuses arbitrarily, but because the file object
+  holds only a cursor and has no knowledge of total line count without reading
+  the whole file first.
+- readlines() loads everything into memory as a real list, unlocking indexing,
+  len(), slicing, and multiple passes — at the cost of memory. The right choice
+  depends on what you need to do downstream.
+- sorted(file) works: Python consumes the iterator line by line internally and
+  sorts the result. The CS50P notes claiming otherwise were imprecise. The correct
+  constraint is: you can't sort lines while processing them as they arrive — you
+  need them all collected first, which sorted() handles automatically.
+- csv.reader yields list rows, not dicts. Key-based access only works if you
+  explicitly construct the dict yourself, or use csv.DictReader, which does it
+  automatically from the header row.
+- Appending row directly vs appending a constructed dict is not interchangeable:
+  it changes the type of every element in the list, and downstream code assuming
+  dict structure breaks silently until a key access is attempted.
+- For CSVs with more than 2–3 columns, index-based access (p[0], p[1]) is fragile
+  — any column reorder silently corrupts the data. Key-based access (p["name"])
+  is robust to that.
+
+**Decision made:** Use direct file object iteration as the default for single-pass
+reading. Use readlines() only when indexing, length, slicing, or multiple passes
+are needed. Use csv.DictReader as the default for any CSV with a header row —
+eliminates the manual unpack-and-build step and makes code self-documenting.
+Both sessions are direct prerequisites to the mini-challenge: writing the psutil
+CSV logger requires understanding how csv.writer produces rows, what the stdlib
+csv module can and cannot do, and how file iterators behave — all covered here.
+
+**Reversible:** Yes.
+
+---
+## 2026-06-07 — [Phase 0 / Python RAM, Timestamps & IDE Taming]
+
+**Context:** Continuing Python mini-challenge (hardware tracking). Expanding the `test_cpu.py` script to include RAM and Timestamps, while fixing IDE distractions.
+**What happened:** Disabled VS Code's aggressive autocomplete via `settings.json`. Fetched RAM data using `psutil.virtual_memory()` and current time using the native `datetime` module. Discussed the pros and cons of tuple unpacking.
+**Learning:** - Taming VS Code requires diving into `settings.json` (`editor.inlineSuggest.enabled`, etc.) to truly disable ghost text and auto-closing brackets for pure coding focus.
+- `psutil` returns "named tuples" for complex data like RAM. Extracting data via dot notation (`mem.percent`, `mem.free`) is fundamentally safer and cleaner than unpacking all variables blindly (`a, b, c, d, e = ...`).
+- Python's native way to get the exact time is redundantly named: `datetime.datetime.now()`.
+- Real-world programming relies on searching by "intent" (e.g., "Python get current timestamp") rather than memorizing function names.
+**Decision made:** Use dot notation for hardware data extraction. Code is prepped with CPU, RAM, and timestamp variables.
+**Reversible:** N/A (learning).
 ---
 ## 2026-06-05 — [Phase 0 / Mini-Challenge 2 & Env Epiphanies]
 

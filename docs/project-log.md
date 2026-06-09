@@ -26,9 +26,9 @@ Phase 7 — Full integration             [ ] Pending
 
 ```
 Phase in progress:   Phase 0 — Environment & fundamentals
-Session objective:   Understand workflow and analyze docs
-Last point touched:  Brief generated, session started with Gemini (incomplete when leaving).
-                     .gitignore and git init done.
+Session objective:   Finish mini-challenge 2 and CS50P unit 6. 
+Last point touched:  CSV files I/O; csv.writer subunit as checkpoint. Gemini conversation ongoing. 
+                     Mini-challenge 2.
 ```
 
 ---
@@ -36,6 +36,8 @@ Last point touched:  Brief generated, session started with Gemini (incomplete wh
 ## Next steps
 
 1. Complete Phase 0 with Gemini using the generated brief
+  - Look for more stats to show in the raspberry and watch for gpu usage comptaibility. And future formatting. 
+  - CS50P CSV files is useful now. Consider watching it before going on. 
 2. Return to Claude with phase return (partial or complete) to update state
 
 ---
