@@ -55,7 +55,9 @@ The process always follows this order:
 **What never happens:**
 - Giving finished code without prior understanding
 - Skipping steps "to move faster"
-- Using tools without understanding what they do internally
+- Using tools as black boxes — without grasping the concepts they abstract
+
+> Clarification: "understanding what a tool does internally" means understanding *what* it does and *why* — what MQTT guarantees, what a GPIO pin is, what a sensor measures — not reimplementing its internals. A tool like ESPHome that generates the low-level code is fully compatible with this rule, as long as the concepts underneath it are understood. The goal is comprehension, not manual reimplementation.
 
 **Why this approach works:**  
 Every block the owner builds teaches a different domain. An ESP32 teaches signals and hardware. A REST API teaches networks and protocols. ROS2 teaches distributed systems. By the end of the project, the owner can maintain, debug, and extend the system without depending on anyone.
@@ -127,7 +129,7 @@ The assistant's memory must be retrievable by meaning ("when was the last time I
 
 ### 4.12 Python as the main language
 
-Python for everything except ESP32 (C++ required by the Arduino framework). ROS2 supports Python via rclpy. The AI/ML, audio, vision, and networking ecosystem is the best available in Python. Prototyping speed compensates for the performance difference vs other languages for this use case.
+Python for everything except the ESP32 layer, which is declared in ESPHome's YAML config rather than written in code — ESPHome generates the underlying Arduino C++, with hand-written C++ reserved only for the occasional custom component. ROS2 supports Python via rclpy. The AI/ML, audio, vision, and networking ecosystem is the best available in Python. Prototyping speed compensates for the performance difference vs other languages for this use case.
 
 ---
 
@@ -135,9 +137,26 @@ Python for everything except ESP32 (C++ required by the Arduino framework). ROS2
 
 1. **No touching electrical wiring.** All physical actuators interact with devices in a non-destructive and reversible way.
 2. **Local-first.** Processing of voice, vision, and sensitive data happens on local hardware. The cloud is optional and activated explicitly.
-3. **Modular by design.** Each component can be replaced without affecting the rest. Interfaces between layers are explicit: MQTT topics, REST endpoints, ROS2 topics.
+3. **Modular by design.** Each component can be replaced without affecting the rest. Interfaces between layers are explicit: MQTT topics, REST endpoints, ROS2 topics. The same decoupling lets a component *leave* the system, not just be swapped inside it — see §6.
 4. **The owner understands what they build.** No advancing without understanding. Learning speed takes priority over build speed.
 5. **Privacy.** Camera video and microphone audio never leave the local system unless explicitly required and accepted.
+
+---
+
+## 6. Derivability and portability
+
+Principle 3 (modularity) is internal: any layer can be swapped without breaking the rest. Derivability extends that outward — the same explicit interfaces (MQTT topics, REST endpoints, ROS2 topics) plus the function-organized repo (`architecture.md §4`) mean a component can *leave* Dashvis without being rewired.
+
+This is a property of the structure, **not a fixed list of things Dashvis must do**. It holds as long as two conditions stay true: modules keep talking through their interfaces instead of reaching into each other's internals, and no future tool is hard-wired in as a dependency (see the stack table's "working hypothesis" note in `architecture.md §2`). Nothing below has to be anticipated or built in advance — these are directions the structure leaves open, not commitments.
+
+Three directions it enables:
+- **Extract** — lift one module out and run it as a standalone tool.
+- **Compose** — combine a minimal subset into a smaller "portable Dashvis".
+- **Seed** — use any component as the starting point of a separate project.
+
+Illustratively, not prescriptively: the perception + data layers could become a standalone study-analytics tool (attention / PERCLOS metrics logged over time), the voice pipeline could be reused in another project, or the automation layer could run on its own.
+
+**Honest scope.** Leaf modules (perception, automation, data) extract most cleanly. The brain carries more Dashvis-specific state — own life, memory orchestration, concurrent mode — so anything derived from it inherits more of Dashvis's identity. That is expected, not a defect: the further a component sits from the brain, the more cleanly it travels.
 
 ---
 

@@ -15,6 +15,112 @@ Entry format:
 **Reversible:** yes / no / partially.
 ```
 ---
+
+## 2026-06-10 — [Docs / Terminology normalization + derivability principle]
+
+**Context:** Review pass over the four docs after the MCU / learning-path update.
+Three issues raised: (1) the MicroPython row in the stack table wrapped in narrow
+viewers, orphaning "MicroPython" under the Layer column; (2) "reto/retos" (Spanish)
+was still mixed into the otherwise-English docs — a confusion risk when these docs
+are pasted as context into fresh (often English) sessions; (3) the project's
+reusability / agnostic nature was implied but never stated as a principle.
+
+**What happened:**
+- Shortened the MCU firmware stack row ("Manual Arduino C++, MicroPython" →
+  "Arduino C++, MicroPython") so it no longer wraps. "Manual" was filler —
+  ESPHome auto-generating already implies the contrast.
+- Normalized all "reto/retos" → "challenge/challenges" across architecture.md and
+  devlog.md (project-log.md already used "challenge"; vision.md never used the
+  term). Terminology is now consistent across all four docs.
+- Added a Derivable-and-portable principle. Full detail lives in a new
+  **vision.md §6** (Derivability and portability), with a one-line pointer from §5
+  principle 3 (modularity) and a cross-reference in architecture.md §4. Kept out of
+  the §5 principles list on purpose — a 12-line item breaks the one-liner format, so
+  the detail was relocated rather than shortened. Framed as a structural property,
+  not a feature list.
+
+**Learning:** Checked the derivability claim before stating it — the architecture
+genuinely supports lifting modules out (explicit interfaces + function-organized
+repo). Leaf modules (perception, automation, data) extract cleanly; the brain
+carries more Dashvis-specific state, so derivatives from it inherit more identity.
+Stated that honest scope in the principle rather than overselling it.
+
+**Decision made:** vision.md (new §6 + pointer from principle 3), architecture.md
+(§2 row shortened, §4 cross-ref, terminology), devlog.md (terminology). No phase
+work — doc consistency plus one new principle.
+
+**Reversible:** Yes. Terminology and principle are localized; revertible per file.
+
+---
+
+## 2026-06-10 — [Docs / Learning-path calibration: ESPHome over manual Arduino C++ & the Pico W route]
+
+**Context:** Evaluated whether to add a low-level learning detour (Raspberry Pi
+Pico W + Freenove sensor kit, MicroPython, hand-written GPIO/MQTT) before the ESP32
+work, and whether the learning-first philosophy in vision.md needed softening to
+protect motivation. Trigger: a long discussion about projectors, the Freenove kit
+(on hand, Pico W lost), and how much hardware depth is worth it given the owner
+profile (backend / async Python / architecture-first).
+
+**What happened:**
+- Confirmed the learning-first philosophy stays. "Learning over build speed" is the
+  real value; it does not change. Earlier instinct to soften it was wrong.
+- Identified the actual tension: ESPHome abstracts the low-level code, which looked
+  like a conflict with "no tools as black boxes". Resolved by clarifying that
+  "understanding a tool internally" means grasping the concepts it abstracts (what
+  MQTT guarantees, what a GPIO pin is, what a sensor measures), not reimplementing
+  its internals.
+- Decided ESP32 + ESPHome (YAML) is the MCU path. The Pico W / MicroPython low-level
+  route is OFF the critical path — for this profile it adds little transferable value
+  (the transferable skills are async, distributed systems, architecture, not I2C/SPI
+  timing). Pico W stays an optional detour, not a prerequisite; not planned for
+  repurchase.
+- Recalibrated Arduino C++ in Phase 3: not a primary skill to develop, but a
+  reading-level competence — enough to read what ESPHome generates, debug it, and
+  write the occasional custom component.
+- Catalogued the full Freenove kit inventory in project-log.md (sensors reused with
+  the ESP32 regardless of the Pico W decision).
+
+**Learning:** A tool that hides low-level code (ESPHome) is compatible with a
+learning-first philosophy as long as the goal is comprehension of the abstracted
+concepts, not manual reimplementation. Depth should be calibrated to the profile
+direction, not maximised uniformly across every layer — chasing I2C/SPI mastery
+would disperse effort away from the skills the project is actually meant to build.
+
+**Decision made:** Four docs updated — vision.md (§3 clarified, §4.12 ESP32 now
+ESPHome YAML), architecture.md (§1.4 actuator note, §2 stack adds MCU firmware =
+ESPHome, §3 Phase 3 recalibrated), project-log.md (full kit inventory + Pico W
+off-path + recent-decisions entry). No phase work done; this is a planning /
+calibration change only.
+
+**Reversible:** Yes. The Pico W detour can be re-added if a low-level dive is ever
+wanted; Phase 3 depth can be deepened; all doc edits are localized.
+
+---
+
+## 2026-06-10 — [Phase 1 / ALT LEARNING / Graceful Shutdowns, Threading Concepts, & OS-Level Bottlenecks]
+
+**Context:** I am building IoT project and wanted to understand why Python programs hang when pressing `Ctrl+C`. I started by analyzing a py4u.org blog post about Python threads ignoring `SIGINT`. To test graceful shutdowns in practice, I applied the concepts to a simpler, single-threaded CSV logging script, but encountered a frustrating issue where the terminal would freeze for 2-3 seconds every time I pressed `Ctrl+C`.
+
+**What happened:** 
+1. **Understanding Threads:** I learned that Python threads are cooperative. Worker threads don't "hear" `Ctrl+C` natively; they need a pager system (`threading.Event`) to know when to safely exit. I also learned that `daemon=True` forces abrupt exits, which is dangerous for IoT (leaves motors running or corrupts files).
+2. **Testing Graceful Exits:** I wrote a CSV writer script to test `KeyboardInterrupt` and `sys.exit(0)`. However, the script kept hanging my terminal for a few seconds on exit. 
+3. **Timing the Code:** I suspected the size of my log file (120MB) was causing Python to struggle. I wrapped `file.flush()` in a `time.time()` stopwatch. The flush took only 0.0002 seconds. Python was lightning-fast; the hang was happening *after* my code finished.
+4. **The "Tiny Test" (Isolating Variables):** I changed the code to write to a brand-new, empty `tiny_test.csv` file. When I pressed `Ctrl+C`, it exited instantly with zero hang. This proved the file size was a factor, but not because of Python.
+5. **Visual Proof (Resource Monitor):** I opened Windows *Monitor de recursos* side-by-side with VS Code. By filtering the disk activity, I watched what happened the exact millisecond I pressed `Ctrl+C`. I caught `MsMpEng.exe` (Windows Defender) suddenly spiking and hijacking my `01csvfile.csv` file.
+
+**Learning:** 
+* **Theory:** Hardware and network connections need time to close safely, which is why we must catch signals and politely ask loops to stop rather than forcefully killing them.
+* **OS Mechanics:** A terminal hang isn't always bad code. The moment a script gracefully closes a file, the OS "bouncer" (Antivirus) intercepts it to scan for threats. 
+* **The Root Cause:** Scanning a 120MB CSV takes 2-3 seconds of physical disk read time. During this time, the OS locks the file and freezes the IDE/terminal. 
+* **Scientific Debugging:** I learned to isolate variables (changing file size) and use OS tools to definitively prove external bottlenecks rather than guessing.
+
+**Decision made:** Concluded that my Python code and graceful shutdown logic are perfectly optimized. The root cause of the hang is definitively the Windows Antivirus scanning the large file on exit. It was recommended to add my IoT project folder to the Windows Defender "Exclusions" list to prevent this in the future, though I have not applied this setting yet.
+
+**Reversible:** Yes (Exclusions can be added or removed in Windows Settings if I choose to apply the fix later).
+
+---
+
 ## 2026-06-09 — Phase 0 / File I/O fundamentals: iteration vs readlines(), CSV parsing
 
 **Context:** Working through CS50P Topic 6 (File I/O) as prerequisite groundwork
@@ -80,6 +186,7 @@ csv module can and cannot do, and how file iterators behave — all covered here
 **Reversible:** Yes.
 
 ---
+
 ## 2026-06-07 — [Phase 0 / Python RAM, Timestamps & IDE Taming]
 
 **Context:** Continuing Python mini-challenge (hardware tracking). Expanding the `test_cpu.py` script to include RAM and Timestamps, while fixing IDE distractions.
@@ -90,7 +197,9 @@ csv module can and cannot do, and how file iterators behave — all covered here
 - Real-world programming relies on searching by "intent" (e.g., "Python get current timestamp") rather than memorizing function names.
 **Decision made:** Use dot notation for hardware data extraction. Code is prepped with CPU, RAM, and timestamp variables.
 **Reversible:** N/A (learning).
+
 ---
+
 ## 2026-06-05 — [Phase 0 / Mini-Challenge 2 & Env Epiphanies]
 
 **Context:** mini-challenge 2 regarding python venv  and native hardware tracking with gemini.
@@ -108,9 +217,13 @@ csv module can and cannot do, and how file iterators behave — all covered here
 ## 2026-06-05 — [Phase 0 / Web Sandbox vs Native OS]
 
 **Context:** understanding modern web architecture vs native backend through my LOLDLE project.
+
 **What happened:** mapped JS/React concepts (`node_modules`, `dist`, Firebase) to Python (`.venv`, native execution).
+
 **Learning:** Web frontends run in a browser sandbox (Client-side) and cannot access physical hardware. Serverless apps use BaaS (Firebase) for data storage, but Dashvis requires a native Python backend running directly on the OS to bypass the browser sandbox and read CPU/RAM data. Also, `.venv` is Python's `node_modules` but includes a cloned interpreter, not just libraries.
+
 **Decision made:** proceed to create `.venv` to build the native Dashvis backend.
+
 **Reversible:** N/A (learning).
 
 ---
@@ -118,20 +231,28 @@ csv module can and cannot do, and how file iterators behave — all covered here
 ## 2026-06-05 — [Phase 0 / mini-challenge 1]
 
 **Context:** mini-challenge 1 with gemini.
+
 **What happened:** repository done. public and open core. local-online connection thanks to .git. So far everything
 will be done in "phase-0" branch. Later on, when I know more about the project, we'll start with the main branch.
+
 **Learning:** .git relevance and autocrlf for file compatibility between linux (rpi) & windows  
+
 **Decision made:** open core
+
 **Reversible:** partially
----
 
 ---
+
 ## 2026-06-05 — [Phase 0 / Language swap]
 
 **Context:** spansish to english
+
 **What happened:** change all the documentation from spanish to english
+
 **Learning:** nothing.
+
 **Decision made:** from now on I'll be working on a fully english basis so there's no name inconsistency
+
 **Reversible:** yes, with AI. 
 
 ---
@@ -149,9 +270,10 @@ will be done in "phase-0" branch. Later on, when I know more about the project, 
 ## 2026-06-04 — [Phase 0 / Learning with Gemini]
 
 **Context:** learning with Gemini before starting Phase 0 work.  
+
 **What happened:** granular learning session.  
-**Learning:**  
-Broke down package management, compilers and binaries: how code is written, packaged, distributed and how packages are installed.
+
+**Learning:** Broke down package management, compilers and binaries: how code is written, packaged, distributed and how packages are installed.
 
 Precompiled files (.whl) and what they contain (.dll, .py, metadata... or other files for complex libraries).
 
@@ -160,6 +282,7 @@ pip installs these based on processor and OS. There is a .whl for each combinati
 The OS is the building's rules, the processor is the worker who speaks a language. The binary (.dll/.so) are instructions written in that language.
 
 **Decision made:** none.  
+
 **Reversible:** this is learning, attribute does not apply.
 
 ---
@@ -182,9 +305,9 @@ The OS is the building's rules, the processor is the worker who speaks a languag
 
 **Context:** First real working session of the project. Level calibration before generating the brief.
 
-**What happened:** Calibration: basic terminal (cd, ls, cp), Python between basic and modules, basic Git (commits/push), no networking. Brief generated with 4 mini-retos calibrated to that level + integrator reto (TCP server from documentation without copying examples). Learning session started with Gemini using the brief. Incomplete when closing this session.
+**What happened:** Calibration: basic terminal (cd, ls, cp), Python between basic and modules, basic Git (commits/push), no networking. Brief generated with 4 mini-challenges calibrated to that level + integrator challenge (TCP server from documentation without copying examples). Learning session started with Gemini using the brief. Incomplete when closing this session.
 
-**Learning:** Prior calibration significantly changes the retos. The same integrator reto (TCP server) has a different starting point depending on whether the user already understands what a port is or not.
+**Learning:** Prior calibration significantly changes the challenges. The same integrator challenge (TCP server) has a different starting point depending on whether the user already understands what a port is or not.
 
 **Decision made:** No architectural decision. Phase 0 work is done with Gemini using the generated brief.
 
@@ -192,17 +315,17 @@ The OS is the building's rules, the processor is the worker who speaks a languag
 
 ---
 
-## 2026-06-04 — Reto system: from fixed to dynamic
+## 2026-06-04 — Challenge system: from fixed to dynamic
 
-**Context:** Each phase had a single hardcoded reto in `architecture.md`.
+**Context:** Each phase had a single hardcoded challenge in `architecture.md`.
 
-**What happened:** Analysis revealed that a single reto covers ~25% of a phase's skills. Phase 0 has 4 domains (Linux, Python, Git, networking) and the single reto only touched Python + networking. For a user with no Git experience, that reto validates nothing about Git. For someone who already knows networking, the reto adds nothing. It was symbolic, not representative.
+**What happened:** Analysis revealed that a single challenge covers ~25% of a phase's skills. Phase 0 has 4 domains (Linux, Python, Git, networking) and the single challenge only touched Python + networking. For a user with no Git experience, that challenge validates nothing about Git. For someone who already knows networking, the challenge adds nothing. It was symbolic, not representative.
 
-**Learning:** A single reto per phase implies there is a test for the whole phase. There isn't — there is only one integrating artifact. The domain mini-retos are what validate real learning, and they depend on the starting level.
+**Learning:** A single challenge per phase implies there is a test for the whole phase. There isn't — there is only one integrating artifact. The domain mini-challenges are what validate real learning, and they depend on the starting level.
 
-**Decision made:** Retos are generated at brief creation time with prior level calibration. `architecture.md` documents only the structure (mini-retos + integrator reto + optional extension), not the specific content.
+**Decision made:** Challenges are generated at brief creation time with prior level calibration. `architecture.md` documents only the structure (mini-challenges + integrator challenge + optional extension), not the specific content.
 
-**Reversible:** Yes. If fixed reference retos are preferred, they can be added as examples in `architecture.md` without eliminating dynamic generation.
+**Reversible:** Yes. If fixed reference challenges are preferred, they can be added as examples in `architecture.md` without eliminating dynamic generation.
 
 ---
 

@@ -70,7 +70,7 @@ The system's core. Receives all perception, makes decisions, generates responses
 
 | Component | Detail | Status |
 |-----------|--------|--------|
-| Physical actuators | Servo + ESP32. Presses existing switch button. No electrical wiring. | Planned |
+| Physical actuators | Servo + ESP32 (flashed with ESPHome). Presses existing switch button. No electrical wiring. | Planned |
 | Local orchestrator | Home Assistant on RPi. MQTT as message bus. | Planned |
 | Ecosystem | Alexa as peripheral (mic/speaker). Zigbee/Z-Wave managed by HA. | Planned |
 
@@ -108,6 +108,7 @@ Vector DB           ChromaDB                   Pinecone (cloud), Qdrant
 IoT hub             Home Assistant + RPi       OpenHAB, Node-RED
 IoT protocol        MQTT (Mosquitto)           CoAP, HTTP polling
 Microcontroller     ESP32                      Arduino Nano, RPi Pico
+MCU firmware        ESPHome (YAML)             Arduino C++, MicroPython
 Vision              OpenCV + MediaPipe         dlib, InsightFace
 Robot OS            ROS2 Humble (rclpy)        custom framework
 Video stream        WebRTC                     RTSP, HLS
@@ -134,13 +135,13 @@ From Phase 3 onwards, robot (Phase 6) can advance in parallel with automation (P
 | 6 | Robotics & ROS2 | Robotics | Robot with arms and camera |
 | 7 | Full integration | Architecture | Complete Dashvis system |
 
-### Phase reto structure
+### Phase challenge structure
 
-Retos are not fixed in advance. They are generated when creating each phase brief, calibrated to the owner's actual level at that point. The structure is always the same:
+Challenges are not fixed in advance. They are generated when creating each phase brief, calibrated to the owner's actual level at that point. The structure is always the same:
 
-- **Mini-retos**: one per skill area of the phase. Calibrated after level questions at the start of the brief.
-- **Integrator reto**: a functional artifact that combines all the phase's skills.
-- **Extension reto** *(optional)*: to go deeper if the phase is completed ahead of schedule.
+- **Mini-challenges**: one per skill area of the phase. Calibrated after level questions at the start of the brief.
+- **Integrator challenge**: a functional artifact that combines all the phase's skills.
+- **Extension challenge** *(optional)*: to go deeper if the phase is completed ahead of schedule.
 
 ### Phase detail
 
@@ -157,8 +158,8 @@ You'll learn: audio signals (PCM, sample rate, WAV), real-time streams, wake wor
 You'll build: full pipeline wake word → STT → LLM/heuristic → TTS with latency < 2 s.
 
 **Phase 3 — IoT & ESP32** *(4–5 weeks)*  
-You'll learn: GPIO/ADC/PWM, Arduino C++, MQTT (pub/sub, QoS, retain), servos, Wi-Fi/OTA.  
-You'll build: ESP32 + servo on blind switch, end-to-end voice control.
+You'll learn: GPIO/ADC/PWM (conceptual), ESPHome (YAML config) as the primary flow, MQTT (pub/sub, QoS, retain), servos, Wi-Fi/OTA. Arduino C++ at reading level only — enough to understand what ESPHome generates, debug it, and write the occasional custom component, not a primary skill to develop.  
+You'll build: ESP32 (flashed with ESPHome) + servo on blind switch, end-to-end voice control.
 
 **Phase 4 — Computer vision** *(3–4 weeks)*  
 You'll learn: OpenCV, MediaPipe Face Mesh (468 landmarks), gaze and pose estimation, DMS metrics.  
@@ -181,6 +182,8 @@ You'll build: complete integrated system with central event bus.
 ## 4. Repository structure
 
 The repository organizes code by **what it does**, not by when it was learned. Phases are a learning structure; the repo is a system structure.
+
+This function-first layout is also what makes the system **derivable** (`vision.md §6`): because each module lives in its own folder behind an explicit interface, it can be lifted out as a standalone tool or copied into a separate project without dragging the rest of Dashvis with it. The repo structure is the enabler; the principle is the intent.
 
 ```
 dashvis/
@@ -211,20 +214,20 @@ The single question that determines where code goes: **is this code a Dashvis co
 
 Applied to the output types of each phase:
 
-**Mini-retos** → always to `scratch/phase_N/`. They are calibrated exercises to acquire domain skills. Historical reference, never production.
+**Mini-challenges** → always to `scratch/phase_N/`. They are calibrated exercises to acquire domain skills. Historical reference, never production.
 
-**Integrator reto** → the culmination of the mini-retos, combining all phase skills into a functional artifact. For Phases 1–7, that artifact IS the Dashvis component described by "You'll build" — it goes to its architectural folder. For Phase 0, even the integrator reto is an exercise (the TCP server is not a Dashvis component) — it goes to scratch.
+**Integrator challenge** → the culmination of the mini-challenges, combining all phase skills into a functional artifact. For Phases 1–7, that artifact IS the Dashvis component described by "You'll build" — it goes to its architectural folder. For Phase 0, even the integrator challenge is an exercise (the TCP server is not a Dashvis component) — it goes to scratch.
 
 **Phase 0 is the full exception**: nothing built in this phase is a Dashvis component. Everything goes to `scratch/phase_0/`.
 
 ```
 Phase 1 example:
   scratch/phase_1/
-    http_basics.py     ← mini-reto: learning HTTP
-    auth_test.py       ← mini-reto: learning authentication
+    http_basics.py     ← mini-challenge: learning HTTP
+    auth_test.py       ← mini-challenge: learning authentication
 
   brain/
-    router.py          ← integrator reto = You'll build: LLM wrapper + heuristic/AI router
+    router.py          ← integrator challenge = You'll build: LLM wrapper + heuristic/AI router
 ```
 
 > This structure must be included in all briefs so any working session knows exactly where to put code.
@@ -262,14 +265,14 @@ dashvis/
 │   └── phase_N/      ← exercises for this phase (not production)
 [existing system folders — only those already created]
 Rule: exercises → scratch/phase_N/ · Dashvis components → architectural folder
-Integrator reto of each phase IS the component — goes to its architectural folder.
+Integrator challenge of each phase IS the component — goes to its architectural folder.
 Phase 0: everything goes to scratch, nothing is a Dashvis component yet.
 
 THIS SESSION — Phase N: [Name]
 You'll learn: [phase skill list]
 You'll build: [build target]
-Mini-retos: [generated in this brief after level calibration]
-Integrator reto: [generated in this brief]
+Mini-challenges: [generated in this brief after level calibration]
+Integrator challenge: [generated in this brief]
 
 TODAY'S TASK
 [What you want to work on specifically in this session]
