@@ -52,6 +52,15 @@ Keep in mind the differentiation between "core funcionality" and "potentially co
 
 ## Recent decisions
 
+- 2026-06-10: MCU path decided — ESP32 + ESPHome (YAML) over manual Arduino C++
+  and over the Pico W / MicroPython route. Arduino C++ kept only at reading level
+  in Phase 3 (debug ESPHome output + occasional custom component). Pico W marked
+  off critical path (profile-driven, not planned for repurchase). Learning-first
+  philosophy unchanged; "understanding a tool" clarified as grasping what it
+  abstracts, not reimplementing it. Full Freenove kit inventory added under
+  Hardware. See vision.md §3 & §4.12, architecture.md §2 & §3 (Phase 3). Detailed
+  rationale in devlog.md.
+
 - 2026-06-04: Phase 0 setup vs system development conflict — supposedly covered.
   Should be able to continue with Gemini now; it will know what goes to phase_0 and what doesn't based on the brief.
 
@@ -64,17 +73,116 @@ Foundational design decisions are in `vision.md §4`.
 
 ## Hardware
 
+### System hardware
 ```
 Raspberry Pi:     [ ] To acquire / [X] On hand
-ESP32:            [X] To acquire / [ ] On hand
+ESP32:            [X] To acquire / [ ] On hand   ← critical-path purchase for Phase 3 (runs ESPHome)
 Microphones:      [X] To acquire / [ ] On hand
 Cameras:          [X] To acquire / [ ] On hand
-Mini projectors:  [X] To acquire / [ ] On hand
+Mini projectors:  [X] To acquire / [ ] On hand   (not needed yet — prototyping output goes to the monitor)
 Robot (chassis):  [X] To acquire / [ ] On hand
 Alexa/Echo:       [ ] To acquire / [X] On hand
 Extra monitors:   [X] To acquire / [ ] On hand
 Monitor arms:     [X] To acquire / [ ] On hand
 Etc.              (to be defined)
+```
+
+### Freenove Ultimate Starter Kit — ON HAND
+Full component inventory below. These sensors and modules connect to the ESP32 for
+Phase 3 prototyping. The kit originally shipped with a Raspberry Pi Pico W, now lost.
+
+Pico W status: OFF the critical path, not planned for repurchase for now. Given the
+profile (backend / async / architecture-first), the low-level Pico W + MicroPython
+route adds little *transferable* value relative to this direction — the skills the
+project is meant to build are async, distributed systems, and architecture, not
+I2C/SPI timing. ESP32 + ESPHome is the chosen path. The Pico W remains an optional
+detour if a low-level dive is ever wanted; the kit's sensors work with the ESP32
+regardless.
+
+```
+Microcontroller (missing):
+  Raspberry Pi Pico W ......................... x1   (lost — not planned for repurchase)
+
+Sensors:
+  Temperature & Humidity Sensor (DHT) ......... x1
+  Thermistor .................................. x1
+  Photoresistor ............................... x1
+  Infrared Motion Sensor (PIR) ................ x1
+  Ultrasonic Ranging Module ................... x1
+  Accelerometer Module ........................ x1
+  RFID Module ................................. x1
+
+Actuators & motors:
+  Servo ....................................... x1
+  Stepping Motor .............................. x1
+  Stepping Motor Driver ....................... x1
+  Motor ....................................... x1
+  Relay ....................................... x1
+  Motor Driver Chip ........................... x1
+
+Audio:
+  Speaker ..................................... x1
+  Audio Converter & Amplifier ................. x1
+  Passive Buzzer .............................. x1
+  Active Buzzer ............................... x1
+
+Displays & visual:
+  LCD Module (16x2) ........................... x1
+  4-Digit 7-Segment Display ................... x1
+  7-Segment Display ........................... x1
+  8x8 LED Matrix .............................. x1
+  LED Bar Graph ............................... x1
+  8 RGB LED Module ............................ x1
+  RGB LED ..................................... x1
+  Red LED ..................................... x10
+  Green LED ................................... x4
+  Blue LED .................................... x4
+  Yellow LED .................................. x4
+
+Physical input:
+  Push Button ................................. x4
+  Big Push Button ............................. x4
+  Push Button Caps (red/green/blue/yellow) .... x1 each
+  Switch ...................................... x2
+  Vibration Switch ............................ x1
+  Keypad (4x4) ................................ x1
+  Joystick .................................... x1
+  Infrared Remote ............................. x1
+  Potentiometer ............................... x3
+
+Passive electronics:
+  Resistor 220 ohm ............................ x20
+  Resistor 1K ohm ............................. x10
+  Resistor 10K ohm ............................ x10
+  Capacitor 0.1uF ............................. x2
+  Capacitor 10uF .............................. x2
+  Rectifier Diode ............................. x2
+  Switch Diode ................................ x2
+  NPN Transistor .............................. x2
+  PNP Transistor .............................. x2
+  Serial-to-Parallel Chip ..................... x2
+
+Wiring & connectors:
+  65 Jump Wire M-M ............................ x1
+  10 Jump Wire F-F ............................ x1
+  10 Jump Wire F-M ............................ x1
+  40 Pin Header ............................... x1
+  Female 40 Pin Header ........................ x1
+  USB Cable ................................... x1
+  9V Battery Cable ............................ x1
+  Crowbar ..................................... x1
+
+Power:
+  2xAA Battery Holder ......................... x1
+  Breadboard Power Module ..................... x1
+
+Boards & misc:
+  Project Board (breadboard) .................. x1
+  General Board ............................... x3
+  Resistor Color Code Card .................... x1
+  Pinout Card ................................. x1
+  Pinout Sticker .............................. x1
+  Plastic Box ................................. x1
 ```
 
 ---
