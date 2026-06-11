@@ -48,18 +48,19 @@ Maybe the documents are too defined. Not sure if there is early over-optimizatio
 
 Keep in mind the differentiation between "core funcionality" and "potentially comercializable functionality". Keep the first open source, and the second reserved for comercial licences.  
 
+Candidate *luxury* functions that would each open their own third-party door under `vision.md §7` — none open today, none required by the core: emotional tone analysis from raw audio, rich visual scene understanding from raw frames. Decide per function, if ever.
+
 ---
 
 ## Recent decisions
 
-- 2026-06-10: MCU path decided — ESP32 + ESPHome (YAML) over manual Arduino C++
-  and over the Pico W / MicroPython route. Arduino C++ kept only at reading level
-  in Phase 3 (debug ESPHome output + occasional custom component). Pico W marked
-  off critical path (profile-driven, not planned for repurchase). Learning-first
-  philosophy unchanged; "understanding a tool" clarified as grasping what it
-  abstracts, not reimplementing it. Full Freenove kit inventory added under
-  Hardware. See vision.md §3 & §4.12, architecture.md §2 & §3 (Phase 3). Detailed
-  rationale in devlog.md.
+- 2026-06-10: Hybrid three-tier model + graceful degradation + three-rung brain
+  (vision §4.13–4.14, architecture §1.7).
+- 2026-06-10: Data-flow governance — two flows, minimization by need (vision §7).
+- 2026-06-10: SDR scoped as external telemetry provider; project stays neutral (vision §6).
+- 2026-06-10: MCU path — ESP32 + ESPHome over Arduino C++ / Pico W (vision §4.12, arch §3).
+- 2026-06-10: Procurement batch placed; projector + table deferred (see Hardware).
+  → Full rationale for all five in devlog (2026-06-10 entries).
 
 - 2026-06-04: Phase 0 setup vs system development conflict — supposedly covered.
   Should be able to continue with Gemini now; it will know what goes to phase_0 and what doesn't based on the brief.
@@ -73,31 +74,49 @@ Foundational design decisions are in `vision.md §4`.
 
 ## Hardware
 
-### System hardware
+### Core & nodes
+Status: `[ ]` to acquire (not ordered) · `[~]` ordered, not yet arrived · `[x]` on hand. Tiers map to `architecture.md §1.7`.
+
 ```
-Raspberry Pi:     [ ] To acquire / [X] On hand
-ESP32:            [X] To acquire / [ ] On hand   ← critical-path purchase for Phase 3 (runs ESPHome)
-Microphones:      [X] To acquire / [ ] On hand
-Cameras:          [X] To acquire / [ ] On hand
-Mini projectors:  [X] To acquire / [ ] On hand   (not needed yet — prototyping output goes to the monitor)
-Robot (chassis):  [X] To acquire / [ ] On hand
-Alexa/Echo:       [ ] To acquire / [X] On hand
-Extra monitors:   [X] To acquire / [ ] On hand
-Monitor arms:     [X] To acquire / [ ] On hand
-Etc.              (to be defined)
+Tier 1 — always-on core:
+  [x] Raspberry Pi (main, in-room)
+  [x] Alexa / Echo (peripheral mic + speaker)
+
+Tier 2 — AI muscle:
+  [x] Main PC / laptop
+
+Tier 3 — remote nodes:
+  [x] Smartphone — reused as WiFi/IP voice mic (Phase 2)
+  [~] USB mic, mini (Phase 2)
+  [~] RTL-SDR v5 NESDR SMArt — receive-only, 100 kHz–1.75 GHz, TCXO 0.5 ppm, 3 antennas
+  [~] Raspberry Pi 3B+ — SDR host
+  [~] Leicke ULL PSU 5V 2.5A — SDR power
+  [~] Micro-USB OTG adapter — SDR connectivity
+  [~] ESP32-S3 ×3 (1 bare + 2 with expansion/IPEX kit) — Phase 3
+  [~] ESP-WROOM-32 ×4 — Phase 3
+  [~] WROOM-32U / WROVER ×1, ext. 2.4G antenna — Phase 3
+  [~] Camera AZDelivery 5 MP, OV5647, 15 cm flex — Phase 4 vision (architecture §1.2)
+
+Actuation targets (non-destructive, per vision §4.5):
+  [~] LED pull-cord lamp, battery — servo-press test target (confirm)
+
+Visual output (architecture §1.3):
+  [ ] Projector — deferred; output goes to the monitor for now
+  [ ] Extra monitors · monitor arms
+
+Robot (Phase 6):
+  [ ] Chassis
+
+Out-of-tree — neutral RF/networks project (couples to Dashvis only as link/telemetry):
+  [~] Alfa AWUS036ACHM, 802.11ac long-range
+
+Furniture / staging (not a system component):
+  [ ] Folding table + V-groove wheels — may stage the outdoor radio node
 ```
 
-### Freenove Ultimate Starter Kit — ON HAND
-Full component inventory below. These sensors and modules connect to the ESP32 for
-Phase 3 prototyping. The kit originally shipped with a Raspberry Pi Pico W, now lost.
-
-Pico W status: OFF the critical path, not planned for repurchase for now. Given the
-profile (backend / async / architecture-first), the low-level Pico W + MicroPython
-route adds little *transferable* value relative to this direction — the skills the
-project is meant to build are async, distributed systems, and architecture, not
-I2C/SPI timing. ESP32 + ESPHome is the chosen path. The Pico W remains an optional
-detour if a low-level dive is ever wanted; the kit's sensors work with the ESP32
-regardless.
+### Freenove Ultimate Starter Kit  `[x]` on hand
+Sensors/modules used with the ESP32 for Phase 3. Pico W (shipped with the kit) lost
+and off the critical path — rationale in devlog (2026-06-10, MCU path).
 
 ```
 Microcontroller (missing):
@@ -185,12 +204,24 @@ Boards & misc:
   Plastic Box ................................. x1
 ```
 
+### Planned acquisitions (not ordered)
+Folded into **Core & nodes** above, marked `[ ]` — projector, extra monitors, monitor arms, robot chassis, folding table.
+
+*Excluded from this inventory: a Chinese writing-practice book bought in the same order — personal study material, unrelated to Dashvis.*
+
 ---
 
 ## Technical debt
 
-*No technical debt recorded.*
+Conscious design debt — deferred on purpose, to be resolved when the relevant function is built, not before:
+
+- **Sovereign-backup mechanism (undecided).** The *rule* is set (owner-controlled targets, encrypted transport, no third-party-in-clear — `vision.md §7`). The *how* — SSH-on-arrival vs NAS vs a configured phone — is open. Decide when the first sensitive data needs to survive a device being off.
+- **Egress logging (not built).** §7 requires recording which function opened which third-party door, carrying what. No logging exists yet; build it with the first function that opens a door.
+- **Fine telemetry processing (unclear).** How presence/telemetry gets reduced before it may feed a feature is not designed. Treat all of it as sensitive until that reduction is defined.
+- **Own-life heartbeat ↔ ChromaDB sync (sketch only).** The Tier-1 minimal identity / recent-context cache and its reconciliation with the Tier-2 store on PC wake are decided in principle (`vision.md §4.3`, §4.10) but not specified.
+- **Node data continuity when the Tier-1 host is absent (undecided).** A node whose broker/host is away can buffer (MQTT QoS/retain + local store-and-forward) or drop. Choose per node when it matters; today nothing buffers. Relevant if the Tier-1 host is ever moved/swapped while nodes keep running.
+- **Inter-tier auth / permissions on heterogeneous hosts (out of scope now).** Single owner + home network, so deferred. The §7 "availability ≠ permission" rule already forbids self-granted access; revisit only if Dashvis runs on shared or foreign devices (privilege-escalation surface).
 
 ---
 
-*Last update: founding session — Phase 0 started.*
+*Last update: 2026-06-10 — hardware consultancy session (hybrid tiers, data flows, node inventory) + procurement batch logged. Phase 0 still active.*

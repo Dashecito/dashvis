@@ -42,20 +42,23 @@ The system's core. Receives all perception, makes decisions, generates responses
 
 | Component | Responsibility | Status |
 |-----------|---------------|--------|
-| Intent router | Classifies each input: local heuristic or LLM | Planned |
-| Local heuristics | Simple commands, regex, rules — no token cost | Planned |
-| LLM API | Complex natural language, reasoning | Planned |
+| Intent router | Classifies each input across three rungs: heuristic → local SLM → large LLM, by complexity and by which tier is live | Planned |
+| Local heuristics | Simple commands, regex, rules — no token cost (local flow) | Planned |
+| Local SLM | Small model (~1–3 B) on Tier 1 for offline linguistic continuity — optional | Planned |
+| LLM (API / heavy) | Complex natural language, reasoning — Tier 2 only; may be third-party flow | Planned |
 | TTS | Voice synthesis for output responses | Planned |
 | Concurrent mode | Speaks while executing (asyncio / threads) | Planned |
-| Own life | State machine: mood, energy, proactivity | Planned |
-| Long-term memory | RAG over ChromaDB, semantic retrieval | Planned |
+| Own life | State machine: mood, energy, proactivity. Minimal identity persists 24/7 on Tier 1; heavy proactivity on Tier 2 | Planned |
+| Long-term memory | RAG over ChromaDB on Tier 2; recent-context cache on Tier 1; reconcile on PC wake | Planned |
 
 ### 1.2 Perception
 
 | Component | Detail | Status |
 |-----------|--------|--------|
-| Voice | Lavalier mic (shirt) or fixed array. Local wake word. STT via Whisper/cloud. | Planned |
-| Vision + DMS | Cameras. MediaPipe Face Mesh. Metrics: PERCLOS, gaze score, head pose. Threshold: 30 s distraction → alert. | Planned |
+| Voice | Lavalier mic (shirt) or fixed array. Local wake word. STT via Whisper (Tier 2). | Planned |
+| Voice satellite | Reused old smartphone as WiFi/IP mic — Phase 2, zero-cost test rig before dedicated hardware. | Planned |
+| Vision + DMS | Cameras. MediaPipe Face Mesh (Tier 2). Metrics: PERCLOS, gaze score, head pose. Threshold: 30 s distraction → alert. | Planned |
+| Radio telemetry | RTL-SDR on RPi 3B+, **receive-only**. SpyServer streams spectrum over WiFi 5 GHz to Tier 2. Public signals (NOAA APT weather, ADS-B). The device is a neutral RF project outside the tree; only its reduced telemetry enters Dashvis via MQTT (see `vision.md §6`). | Planned |
 | Telemetry | Screen time from laptop and phone via OS API. | Planned |
 
 ### 1.3 Visual output
@@ -87,8 +90,47 @@ The system's core. Receives all perception, makes decisions, generates responses
 | Component | Detail | Status |
 |-----------|--------|--------|
 | External sources | Google Sheets and Excel via API. Read and write. | Planned |
-| Persistent memory | Local ChromaDB. RAG. Semantic search over history and preferences. | Planned |
+| Persistent memory | Local ChromaDB (Tier 2). RAG. Semantic search over history and preferences. | Planned |
+| External telemetry | Receive-only nodes (e.g. SDR) publish reduced readings via MQTT. Captured raw, interpreted downstream, reusable/reinterpretable. | Planned |
+| Egress governance | Two flows: local (open) / third-party (closed by default, opened per function, minimum, logged). Sovereign backup only to owner-controlled targets. See `vision.md §7`. | Planned |
 | Token management | Heuristics capture ~70-80% of commands. LLM context compressed. | Planned |
+
+### 1.7 Deployment topology (three compute tiers)
+
+The logical hub-and-spoke (§1) is unchanged; this maps those layers onto physical hosts. The mapping is loose by design — tiers talk only through MQTT/sockets, so any layer can move host without code changes (see `vision.md §4.13` and `vision.md §6`). **Tiers below are roles; the device named is the current assignment, swappable (see Mobility).**
+
+```
+Tier 1 — Autonomous core      always-on (role)     now: in-room RPi
+  Home Assistant · Mosquitto (MQTT) · fast local heuristics · optional local SLM
+  · minimal own-life identity · recent-context cache.
+  Guarantee: the room stays functional with no PC and no internet.
+
+Tier 2 — AI muscle            on-demand (role)     now: main PC / laptop
+  Vision/DMS (MediaPipe) · local STT (Whisper) · vector memory (ChromaDB)
+  · large-LLM side of the brain. Publishes percepts/decisions to Tier 1 via MQTT.
+
+Tier 3 — Remote perception    single-task          satellite devices
+  · Voice satellite: reused smartphone as WiFi/IP mic (Phase 2).
+  · Radio/telemetry node: RTL-SDR on RPi 3B+, receive-only, SpyServer → Tier 2.
+  · ESP32 actuator/sensor nodes, flashed with ESPHome (Phase 3).
+```
+
+**Mobility — nodes are discovered, not wired.** Tiers are *roles*, hosts are *assignments*: the RPi holds Tier 1 today, but any always-on host can, and one capable host can hold several roles at once (a laptop as Tier 1 + Tier 2 = a portable Dashvis to demo elsewhere, without taking the home RPi). No hostname or path is hard-coded; a node announces itself on the bus and is consumed by topic, not by address. **Rule of thumb:** if you're about to write a device path or literal IP in a module, stop and put it in config (`.env`). Moving the SDR, swapping the RPi for a laptop, or re-hosting a layer is plug-in-and-appear, not reconfigure — the deployment face of derivability (`vision.md §6`, principle 8). What stays fixed is the *interface*, not the *box*.
+
+**Graceful degradation** — behaviour is defined by which tier *roles* are filled, never assuming all are:
+
+```
+Tier 1 up + Tier 2 up   →  full Dashvis: voice, vision/DMS, deep memory, large-LLM
+                           reasoning, proactive own-life.
+Tier 1 up + Tier 2 down →  autonomous room: HA automations, MQTT, heuristic/SLM
+                           voice→action, minimal identity continuity. No heavy AI,
+                           no vision, no deep retrieval.
+Tier 1 down             →  no always-on core present: the room's core guarantee pauses
+                           until some host takes the Tier-1 role again. Not a crash —
+                           Dashvis is portable and re-instantiates on another host.
+```
+
+The brain's three rungs (`vision.md §4.14`) make the middle row a gradient, not a cliff: without a Tier-2 host, heuristics still act and the optional local SLM still speaks — less eloquent, not mute. (A single powerful host holding both roles collapses the first two rows into one: the "Tier 2 up, Tier 1 down" case isn't a state — whoever runs Tier 2 can also run Tier 1.)
 
 ---
 
@@ -100,6 +142,7 @@ Each technology in this table is a working hypothesis, not a commitment. It is c
 Layer               Chosen technology          Rejected alternatives
 ──────────────────────────────────────────────────────────────────────
 LLM                 Claude API / GPT-4o        Local Ollama (lower quality)
+Local SLM           Llama 3.2 3B / Phi-3       (optional Tier-1 rung)
 Heuristics          Python regex + rules       spaCy lightweight NLP
 Wake word           openWakeWord               Porcupine (more accurate, paid)
 STT                 Whisper local              Deepgram / Whisper API (cloud)
@@ -116,6 +159,8 @@ Event bus           Redis Pub/Sub              RabbitMQ, ZeroMQ
 Containers          Docker + Compose           systemd units
 Main hardware       Raspberry Pi 4/5           NVIDIA Jetson (high cost)
 ```
+
+> Out-of-tree tooling — RTL-SDR + SpyServer for the radio node, and the Alfa adapter used by the separate RF/networks learning project — is **not** part of the Dashvis core stack. Only the reduced telemetry such nodes publish enters Dashvis, via MQTT (see §1.2, §1.6 and `vision.md §6`).
 
 ---
 

@@ -16,6 +16,102 @@ Entry format:
 ```
 ---
 
+## 2026-06-10 — [Architecture / Tiers are roles, not devices + no-hardcoded-host rule]
+
+**Context:** The graceful-degradation block read "RPi off → system down by design",
+which grated: it ties the system's life to one specific box. Owner pushed on the
+portability cases — swap the RPi for a laptop, demo at a friend's house, install
+Dashvis on another device, and what happens to node data when a host disconnects.
+
+**What happened / resolved:**
+- Reframed Tier 1/2/3 as **roles**, with the device named only as the *current
+  assignment*. Any always-on host can hold Tier 1; one capable host can hold several
+  roles at once (laptop = Tier 1 + Tier 2 → a portable Dashvis to demo elsewhere
+  without taking the home RPi). This dissolves the "PC on + RPi off" puzzle: whoever
+  runs Tier 2 can also run Tier 1.
+- "RPi off → system down" rewritten to "no always-on core present: the core guarantee
+  pauses until some host takes the Tier-1 role; not a crash, Dashvis re-instantiates
+  elsewhere." The *floor* concept stays (there must be an always-on core); what changed
+  is that the floor is a role, not a box.
+- Adopted the owner's rule of thumb as principle 8: no hardcoded host assumptions —
+  device paths / IPs / hostnames go in `.env`, never in module code. This is the
+  lightweight discipline that makes the role model real; nothing to implement now.
+- Logged two deferred debts: node data continuity when a host is absent (buffer vs
+  drop), and inter-tier auth / privilege-escalation surface (out of scope while single
+  owner + home network — §7 "availability ≠ permission" already covers the principle).
+
+**Learning:** Most of the owner's worry was framing, not a design flaw — the
+architecture already supported host-mobility (derivability + "discovered not wired");
+the docs just spoke in device names. Naming roles vs assignments fixed it without new
+machinery. Building a permissions model now would be over-engineering; noting it as a
+deferred surface is the right altitude.
+
+**Decision made:** vision §4.13 (role note) + principle 8; architecture §1.7 (role
+table, role-based degradation, `.env` rule in Mobility); project-log technical debt
+(two items).
+
+**Reversible:** Yes — framing + one rule + two logged debts; no implementation.
+
+---
+
+## 2026-06-10 — [Architecture / Hybrid compute tiers, graceful degradation, data-flow governance, node inventory]
+
+**Context:** Came back from a long external-AI hardware-consultancy session with a
+summary: a three-tier hybrid compute model, graceful degradation, and a batch of
+newly acquired hardware (ESP32-S3 + WROOM-32 fleet, OV5647 camera, RTL-SDR + RPi
+3B+, Alfa adapter, reused smartphone). The summary had to be processed *critically*,
+not pasted in — the owner explicitly asked to flag conflicts with what was already
+decided. Several real tensions surfaced and were worked through over the session.
+
+**What happened / tensions resolved:**
+- *Brain location vs always-on identity.* Moving the LLM + ChromaDB to the PC (Tier
+  2) meant own-life and memory would die when the PC sleeps — a direct conflict with
+  the "always-on, own life" vision. Resolved with the Jarvis-in-the-suit split:
+  minimal identity + recent-context cache persist 24/7 on Tier 1; heavy capability
+  lives on Tier 2; they reconcile on PC wake. Identity is the floor, capability scales.
+- *Heuristics-only felt too dumb offline.* Introduced a third brain rung — an
+  optional local SLM (~1–3 B) on Tier 1 — so degradation is a gradient of eloquence,
+  not functional-vs-mute. SLM is optional; falls back to heuristics if the RPi can't.
+- *The cloud/API contradiction (owner-spotted).* "Sensitive data never goes to a
+  third party in clear" collided with sending voice/percepts to an LLM API. Resolved
+  by separating two flows and the insight that local-first ≠ local-only: raw never
+  crosses; only reduced text/metrics, explicitly, per function. The boundary is the
+  *state of rawness* at egress, not where compute happens.
+- *Who decides to use the cloud.* Settled: the router may choose local vs third-party
+  *among already-authorised doors*, but cannot open new ones — availability ≠
+  permission. Doors are opened by the owner at design time.
+- *"Non-sensitive" telemetry isn't.* Owner correctly pushed back that telemetry leaks
+  by combination. Dropped the sensitive/non-sensitive classification entirely;
+  governance is by where-data-lives / how-it-travels (the two flows).
+- *Where the SDR lives.* It risked being both "fundamental telemetry" and "out of
+  tree". Resolved: device + raw capture out-of-tree (neutral RF project); only reduced
+  telemetry enters via MQTT. Fundamental ≠ inside — Dashvis depends on a data flow,
+  not the apparatus.
+- *Offensive/defensive bias.* Kept the project and its derivatives neutral by
+  construction so they can pivot under their own terms; the boundary on offensive
+  *tooling* is about what gets built, not a label baked into the architecture.
+
+**Learning:** The original "everything on the RPi" was a latent sizing debt, not a
+real design — the tier model is the correction, so this added realism rather than
+complexity. A privacy model survives contact with reality only if it governs the
+*egress boundary in a reduced state*, not the existence of cloud calls. And most of
+these were principle-level decisions whose *mechanism* is rightly deferred (logged as
+conscious technical debt), so nothing here required writing implementation.
+
+**Decision made:** vision.md — §4.3 & §4.10 retiered, new §4.13 (hybrid tiers) &
+§4.14 (three-rung brain/SLM), principles 6 (graceful degradation) & 7 (data
+sovereignty), §6 extended (SDR-as-external-provider + neutrality), new §7 (data
+flows). architecture.md — §1.1 brain retiered, §1.2 & §1.6 nodes + egress, new §1.7
+(deployment topology + degradation), stack table + Local SLM and out-of-tree note.
+project-log.md — node inventory, system-hardware checklist, three decisions,
+technical-debt section, open-question doors.
+
+**Reversible:** Yes, at the design level. Tiers/flows are principles; the deferred
+mechanisms (backup transport, egress logging, heartbeat sync) are still open and can
+be chosen differently when their phase arrives.
+
+---
+
 ## 2026-06-10 — [Docs / Terminology normalization + derivability principle]
 
 **Context:** Review pass over the four docs after the MCU / learning-path update.
