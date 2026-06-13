@@ -106,6 +106,16 @@ Visual output (architecture §1.3):
 
 Robot (Phase 6):
   [ ] Chassis
+  [x] Arduino UNO generic — motor/actuator co-processor candidate (see analysis)
+  [x] Arduino UNO AZ-Delivery — motor/actuator co-processor candidate
+  [x] L298N dual motor driver (H-bridge, heatsink) — DC motor + stepper control
+  [x] ULN2003 stepper motor driver module — stepper motor control
+
+Audio:
+  [x] Freenove audio converter + amplifier module (ES7148 + PAM8403) — speaker out (Phase 2/3)
+
+Miscellaneous / unassigned:
+  [x] AC/DC switched-mode PSU (bare PCB, no enclosure) — bench power; role TBD
 
 Out-of-tree — neutral RF/networks project (couples to Dashvis only as link/telemetry):
   [~] Alfa AWUS036ACHM, 802.11ac long-range

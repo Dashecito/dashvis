@@ -15,8 +15,27 @@ Entry format:
 **Reversible:** yes / no / partially.
 ```
 ---
+## 2026-06-12 — [Phase 0 / Finished Unit 6: File I/O CS50P course content]
 
-## 2026-06-10 — [Architecture / Tiers are roles, not devices + no-hardcoded-host rule]
+**Context:** Finished Unit 6: File I/O CS50P course content, being these all the lectures. I still have to do (and once I do I will report it in the devlog as well) the Problem Set of this unit. Today is friday. I plan doing at least 1 tomorrow and the rest on Sunday. I will update once I finish this Unit 6. I've last like 2-3 days for this because I tend to disperse and learn about more stuff during this, like: 
+- flushing
+- memory management
+- threading, and the python library that manages it: 
+  - basic usage of these libraries: signal, threading, time.
+
+**What happened:** learned about writing and reading and modifying CSV files, .txt files, and images with PIL library. Done tons of exercises and watched about 30 min of lectures. 
+(basic usage of these libraries: signal, threading, time)
+Basic flushing, memory management, threading... etc
+
+**Learning:** Basic File I/O management and other stuff. 
+
+**Decision made:** Finish the Problem Set before this week ends (last day being 2026/6/14 23:59PM UTC+2) and keep on going with the phase 0 with Gemini. 
+
+**Reversible:** not applicable. It's learning. 
+
+---
+
+## 2026-06-11 — [Architecture / Tiers are roles, not devices + no-hardcoded-host rule]
 
 **Context:** The graceful-degradation block read "RPi off → system down by design",
 which grated: it ties the system's life to one specific box. Owner pushed on the
