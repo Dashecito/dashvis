@@ -87,18 +87,18 @@ Tier 2 — AI muscle:
 
 Tier 3 — remote nodes:
   [x] Smartphone — reused as WiFi/IP voice mic (Phase 2)
-  [~] USB mic, mini (Phase 2)
-  [~] RTL-SDR v5 NESDR SMArt — receive-only, 100 kHz–1.75 GHz, TCXO 0.5 ppm, 3 antennas
-  [~] Raspberry Pi 3B+ — SDR host
-  [~] Leicke ULL PSU 5V 2.5A — SDR power
-  [~] Micro-USB OTG adapter — SDR connectivity
-  [~] ESP32-S3 ×3 (1 bare + 2 with expansion/IPEX kit) — Phase 3
+  [x] USB mic, mini (Phase 2)
+  [x] RTL-SDR v5 NESDR SMArt — receive-only, 100 kHz–1.75 GHz, TCXO 0.5 ppm, 3 antennas
+  [x] Raspberry Pi 3B+ — SDR host
+  [x] Leicke ULL PSU 5V 2.5A — SDR power
+  [x] Micro-USB OTG adapter — SDR connectivity
+  [x] ESP32-S3 ×3 (1 bare + 2 with expansion/IPEX kit) — Phase 3
   [~] ESP-WROOM-32 ×4 — Phase 3
-  [~] WROOM-32U / WROVER ×1, ext. 2.4G antenna — Phase 3
-  [~] Camera AZDelivery 5 MP, OV5647, 15 cm flex — Phase 4 vision (architecture §1.2)
+  [x] WROOM-32U / WROVER ×1, ext. 2.4G antenna — Phase 3
+  [x] Camera AZDelivery 5 MP, OV5647, 15 cm flex — Phase 4 vision (architecture §1.2)
 
 Actuation targets (non-destructive, per vision §4.5):
-  [~] LED pull-cord lamp, battery — servo-press test target (confirm)
+  [x] LED pull-cord lamp, battery — servo-press test target (confirm)
 
 Visual output (architecture §1.3):
   [ ] Projector — deferred; output goes to the monitor for now
@@ -234,4 +234,4 @@ Conscious design debt — deferred on purpose, to be resolved when the relevant 
 
 ---
 
-*Last update: 2026-06-10 — hardware consultancy session (hybrid tiers, data flows, node inventory) + procurement batch logged. Phase 0 still active.*
+*Last update: 2026-06-16 — hardware delivery: most of batch arrived; ESP-WROOM-32 ×4 and Alfa AWUS036ACHM still in transit. Phase 0 still active.*
